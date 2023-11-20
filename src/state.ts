@@ -1,6 +1,12 @@
 import { Event, emit } from "eventmonger";
 
+export interface TodoItem {
+    id: string;
+    text: string;
+}
+
 export interface State {
+    todo: TodoItem[]
 }
 
 // internal state machinations //
