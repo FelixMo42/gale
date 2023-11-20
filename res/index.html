@@ -20,8 +20,9 @@
 
         <!-- we are live! -->
         <script type="module">
-            import main from "../out/index.js"
+            import main, { watchState } from "../out/index.js"
             document.getElementById("root").replaceChildren(main())
+            watchState(() => document.getElementById("root").replaceChildren(main()))
         </script>
     </body>
 </html>
