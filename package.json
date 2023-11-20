@@ -1,0 +1,14 @@
+{
+    "name": "gale",
+    "version": "0.0.0",
+    "description": "The TODO list of my dreams <3",
+    "scripts": {
+        "build": "node scripts/build.cjs",
+        "watch": "node scripts/watch.cjs"
+    },
+    "author": "Felix Moses <felix@tacocat.com>",
+    "license": "LGPL-3.0-or-later",
+    "dependencies": {
+        "esbuild": "0.19.4"
+    }
+}

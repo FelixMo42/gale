@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Gale</title>
+
+        <!-- open sans -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+
+        <!-- my css -->
+        <link rel="stylesheet" href="./style.css">
+
+        <!-- config -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <!-- root for script to attach too -->
+        <div id="root"></div>
+
+        <!-- we are live! -->
+        <script type="module">
+            import main from "../out/index.js"
+            document.getElementById("root").replaceChildren(main())
+        </script>
+    </body>
+</html>
