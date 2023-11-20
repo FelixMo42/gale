@@ -1,3 +1,4 @@
+const fs = require("fs/promises")
 const build = require("./build.cjs")
 
 async function main() {
