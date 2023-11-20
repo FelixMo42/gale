@@ -2,7 +2,7 @@ const { build } = require("esbuild")
 
 const banner = `\
 function m(t, o, ...c) {
-    if (typeof t === "function") return t(o, c)
+    if (typeof t === "function") return t({ ...(o || {}), children: c})
     const e = document.createElement(t)
     if (o) {
         for (const [k, v] of Object.entries(o)) {
