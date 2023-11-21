@@ -23,7 +23,7 @@ input {
     padding: 10px;
 }
 
-.todo div {
+.todo span {
     display: flex;
     flex-direction: row;
     margin-bottom: 5px;
@@ -38,4 +38,17 @@ input {
     font-size: 1em;
     outline: none;
     flex: 1;
+}
+
+.drag span {
+    position: relative;
+}
+
+#add-todo {
+    font-size: 1em;
+    margin-left: 21px;
+    background: none;
+    border: none;
+    outline: none;
+    color: #FAEBD7;
 }
