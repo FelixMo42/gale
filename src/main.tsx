@@ -48,12 +48,19 @@ function putdown() {
     drag.selected.classList.remove("drag")
     drag.selected === undefined
 
-    // reorder todo list
+    // get new todo order
     const list = drag.selected.parentElement.children
     const order = []
     for (let i = 0; i < list.length; i++) {
         order.push(list.item(i).id)
     }
+
+    // only update if the order has changed
+    if (order.every((id, i) => state.todo[i].id === id)) {
+        return
+    }
+
+    // reorder
     reorderTodo(order.map((id) => state.todo.find((item) => item.id === id)))
 }
 
@@ -75,12 +82,13 @@ document.onmousemove = (e) => {
             items.push({ y, el })
         }
 
-        // reorder the children
-        drag.selected.parentElement.replaceChildren(
-            ...items
-                .sort((a, b) => a.y - b.y)
-                .map(({ el }) => el)
-        )
+        // sort the items
+        items.sort((a, b) => a.y - b.y)
+
+        // reorder the children if the order has changed
+        if (!items.every(({ el }, i) => el.id === state.todo[i].id)) {
+            drag.selected.parentElement.replaceChildren(...items.map(({ el }) => el))
+        }
 
         // make so that the element follows the mouse
         offsetView(e)
