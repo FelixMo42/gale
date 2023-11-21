@@ -3,6 +3,7 @@ import { Event, emit } from "eventmonger";
 export interface TodoItem {
     id: string;
     text: string;
+    checked: boolean;
 }
 
 export interface State {

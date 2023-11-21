@@ -9,11 +9,12 @@ function addTodoItem(text: string) {
 
     update((state) => state.todo.push({
         id: uuidv4(),
-        text
+        text,
+        checked: false
     }))
 }
 
-function updateTodoItem(item: TodoItem, text: string) {
+function updateTodoItemText(item: TodoItem, text: string) {
     if (text === "") {
         // remove the todo
         update(state => state.todo = state.todo.filter((({ id }) => id !== item.id)))
@@ -23,14 +24,22 @@ function updateTodoItem(item: TodoItem, text: string) {
     }
 }
 
+function updateTodoItemChecked(item: TodoItem, checked: boolean) {
+    update(_state => item.checked = checked)
+}
+
 function TodoItemView({ item }: { item: TodoItem }) {
     return <div>
-        <input type="checkbox" />
+        <input
+            type="checkbox"
+            checked={item.checked}
+            onchange={(e) => updateTodoItemChecked(item, e.target.checked)}
+        />
         <input
             type="text"
             class="item"
             value={item.text}
-            onchange={(e) => updateTodoItem(item, e.target.value)}
+            onchange={(e) => updateTodoItemText(item, e.target.value)}
         />
     </div>
 }
