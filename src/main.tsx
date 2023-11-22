@@ -1,7 +1,7 @@
 import { on } from "eventmonger"
 import { v4 as uuidv4 } from "uuid"
 
-import { State, StateUpdate, TodoItem, state, update } from "./state"
+import { State, StateUpdate, Todo, state, update } from "./state"
 
 function addTodoItem(text: string) {
     // there must be text
@@ -9,12 +9,13 @@ function addTodoItem(text: string) {
 
     update((state) => state.todo.push({
         id: uuidv4(),
+        type: "todo",
         text,
         checked: false
     }))
 }
 
-function updateTodoItemText(item: TodoItem, text: string) {
+function updateTodoItemText(item: Todo, text: string) {
     if (text === "") {
         // remove the todo
         update(state => state.todo = state.todo.filter((({ id }) => id !== item.id)))
@@ -24,11 +25,11 @@ function updateTodoItemText(item: TodoItem, text: string) {
     }
 }
 
-function updateTodoItemChecked(item: TodoItem, checked: boolean) {
+function updateTodoItemChecked(item: Todo, checked: boolean) {
     update(_state => item.checked = checked)
 }
 
-function reorderTodo(todo: TodoItem[]) {
+function reorderTodo(todo: Todo[]) {
     update(state => state.todo = todo)
 }
 
@@ -44,6 +45,9 @@ function pickup(e: MouseEvent, el: HTMLElement) {
 }
 
 function putdown() {
+    // make sure we have something to putdown
+    if (!drag.selected) return
+
     // clear out drag stuff
     drag.selected.classList.remove("drag")
     drag.selected === undefined
@@ -103,7 +107,7 @@ function offsetView(e) {
 
 window.onmouseup = () => putdown()
 
-function TodoItemView({ item }: { item: TodoItem }) {
+function TodoItemView({ item }: { item: Todo }) {
     const el = <div id={item.id} onmousedown={(e) => pickup(e, el)}>
         <span>
             <input
@@ -132,8 +136,15 @@ function AddTodoItemButton() {
     />
 }
 
+function SaveButton() {
+    return <button onclick={() => {
+        navigator.clipboard.writeText(JSON.stringify(state))
+    }}>export</button>
+}
+
 export default function main() {
     return <div class="todo">
+        <SaveButton/>
         <div>
             {state.todo.map(item => <TodoItemView item={item} />)}
         </div>

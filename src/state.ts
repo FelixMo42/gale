@@ -1,13 +1,14 @@
 import { Event, emit } from "eventmonger";
 
-export interface TodoItem {
+export interface Todo {
     id: string;
+    type: "todo";
     text: string;
     checked: boolean;
 }
 
 export interface State {
-    todo: TodoItem[]
+    todo: Todo[]
 }
 
 // internal state machinations //

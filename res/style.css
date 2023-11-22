@@ -9,6 +9,15 @@ body {
     font-family: 'Open Sans', sans-serif;
 }
 
+* {
+    color: #FAEBD7;
+    box-sizing: border-box;
+}
+
+button, input {
+    background-color: black;
+}
+
 input {
     margin: 0px;
 }
