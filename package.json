@@ -3,17 +3,18 @@
     "version": "0.0.0",
     "description": "The TODO list of my dreams <3",
     "scripts": {
-        "build": "node scripts/build.cjs",
-        "watch": "node scripts/watch.cjs"
+        "start": "node scripts/build.js"
     },
     "author": "Felix Moses <felix@tacocat.com>",
     "license": "LGPL-3.0-or-later",
+    "type": "module",
     "dependencies": {
         "esbuild": "0.19.4",
         "eventmonger": "5.0.0",
-        "uuid": "9.0.1"
+        "uuid": "9.0.1",
+        "quill": "2.0.2"
     },
     "devDependencies": {
-        "@types/uuid": "^9.0.7"
+        "@types/uuid": "9.0.7"
     }
 }

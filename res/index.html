@@ -13,6 +13,8 @@
 
         <!-- config -->
         <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="quill.css" rel="stylesheet" />
     </head>
     <body>
         <!-- root for script to attach too -->
@@ -20,9 +22,8 @@
 
         <!-- we are live! -->
         <script type="module">
-            import main, { watchState } from "../out/index.js"
-            document.getElementById("root").replaceChildren(main())
-            watchState(() => document.getElementById("root").replaceChildren(main()))
+            import main from "../out/index.js"
+            main()
         </script>
     </body>
 </html>
