@@ -1,5 +1,6 @@
 import Quill from "quill"
-import { Command, Popup } from "./commandPallet"
+import { Command, Popup } from "../els/commandPallet"
+import { Project } from "../types"
 
 const toolbar = [
     { 'header': 2 },
@@ -11,20 +12,20 @@ const toolbar = [
     'clean'
 ]
 
-export function initQuillEditor() {
+export function initQuillEditor(project: Project) {
     const quill = new Quill("main", {
         modules: { toolbar: { container: toolbar} },
         theme: "bubble"
     })
 
     // load contents
-    quill.setContents(JSON.parse(localStorage.getItem("save")))
+    quill.setContents(JSON.parse(localStorage.getItem(`save/${project.name}`)))
 
     // auto save
     quill.on("text-change", (_delta) => {
         const data = quill.getContents()
         const save = JSON.stringify(data)
-        localStorage.setItem("save", save)
+        localStorage.setItem(`save/${project.name}`, save)
     })
 
     return makeQuillCommands(quill)

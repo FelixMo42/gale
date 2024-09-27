@@ -1,5 +1,5 @@
 # build files
-out
+./pub/index.js
 
 # node nonsense
 package-lock.json

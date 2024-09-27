@@ -27,7 +27,7 @@ body {
 }
 
 main {
-    max-width: 800px;
+    width: 800px;
 }
 
 #root>aside {
@@ -58,11 +58,12 @@ main {
     border-radius: 5px;
 }
 
-input {
+.overlay input {
     /* layout */
     display: block;
     width: 100%;
     padding: 10px 20px;
+    margin-bottom: 10px;
 
     /* styling */
     border: 2px solid teal;
@@ -78,8 +79,7 @@ input {
 }
 
 .command {
-    margin-top: 10px;
-    padding: 5px 20px;
+    padding: 10px 20px;
     border-radius: 5px;
 }
 
@@ -89,6 +89,34 @@ input {
 
 .command.selected {
     background-color: teal;
+}
+
+/* todos */
+
+.todos {
+    padding-top: 20px;
+}
+
+.todo {
+    display: flex;
+    flex-direction: row;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+.todo div {
+    flex: 1;
+    margin-left: 10px;
+}
+
+.todo:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.drag>* {
+    user-select: none;
+    position: relative;
+    cursor: grabbing;
 }
 
 /* ql */

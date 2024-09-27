@@ -2943,6 +2943,10 @@ var _ = new Proxy({}, {
       el.replaceChildren(...children);
       return el;
     };
+    builder.with = (t) => {
+      t(el);
+      return builder;
+    };
     builder.withId = (id) => {
       el.id = id;
       return builder;
@@ -11923,16 +11927,16 @@ var toolbar = [
   { "align": "center" },
   "clean"
 ];
-function initQuillEditor() {
+function initQuillEditor(project) {
   const quill = new quill_default("main", {
     modules: { toolbar: { container: toolbar } },
     theme: "bubble"
   });
-  quill.setContents(JSON.parse(localStorage.getItem("save")));
+  quill.setContents(JSON.parse(localStorage.getItem(`save/${project.name}`)));
   quill.on("text-change", (_delta) => {
     const data = quill.getContents();
     const save = JSON.stringify(data);
-    localStorage.setItem("save", save);
+    localStorage.setItem(`save/${project.name}`, save);
   });
   return makeQuillCommands(quill);
 }
@@ -11947,17 +11951,138 @@ function makeQuillCommands(quill) {
   ];
 }
 
-// src/main.ts
-function main() {
-  const quillCommands = initQuillEditor();
-  registerKeybindings([
-    ...baseCommands,
-    ...quillCommands
-  ]);
+// src/els/draggable.ts
+function draggable(child) {
+  return _.div.with((el) => el.onmousedown = (e) => pickup(e, el))(child);
 }
-function registerKeybindings(commands) {
+var drag = {};
+function pickup(e, el) {
+  drag.maybeSelected = el;
+  drag.start = e.y - el.offsetTop;
+  drag.rawStart = e.y;
+}
+function offsetView(e) {
+  const y = e.clientY - drag.selected.offsetTop - drag.start;
+  const view = drag.selected.firstChild;
+  view.style.top = `${y}px`;
+}
+document.onmouseup = (e) => {
+  if (drag.selected) {
+    putdown();
+  }
+  if (drag.maybeSelected) {
+    drag.maybeSelected === void 0;
+  }
+};
+document.onmousemove = (e) => {
+  if (drag.maybeSelected) {
+    if (e.buttons !== 1) {
+      drag.maybeSelected === void 0;
+    }
+    if (Math.abs(drag.rawStart - e.y) > 10) {
+      drag.selected = drag.maybeSelected;
+      drag.selected.classList.add("drag");
+      drag.maybeSelected = void 0;
+    }
+  }
+  if (drag.selected) {
+    if (e.buttons !== 1)
+      return putdown();
+    const list = drag.selected.parentElement.children;
+    const items = [];
+    for (let i = 0; i < list.length; i++) {
+      const el = list.item(i);
+      const rect = el.getBoundingClientRect();
+      const y = drag.selected === el ? e.clientY : rect.top + rect.height / 2;
+      items.push({ y, el });
+    }
+    drag.selected.parentElement.replaceChildren(
+      ...items.sort((a, b) => a.y - b.y).map(({ el }) => el)
+    );
+    offsetView(e);
+    e.preventDefault();
+  }
+};
+function putdown() {
+  drag.selected.classList.remove("drag");
+  drag.selected.style.top = void 0;
+  drag.selected = void 0;
+}
+
+// src/els/todos.ts
+function initTodos(project) {
+  const todos = [
+    {
+      text: "Apply to jobs"
+    },
+    {
+      text: "Write for 1 hour"
+    }
+  ];
+  document.querySelector("main").replaceChildren(_.div.withClass("todos")(
+    ...todos.map(
+      (todo) => draggable(
+        _.div.withClass("todo")(
+          _.input.withAttr("type", "checkbox")(),
+          _.div(todo.text)
+        )
+      )
+    )
+  ));
+  return [];
+}
+
+// src/main.ts
+var state = {
+  openProject: {
+    name: "UNINIT",
+    commands: [
+      {
+        name: "UNINIT",
+        call: () => {
+        }
+      }
+    ]
+  }
+};
+function openProject(project) {
+  state.openProject = {
+    name: project.name,
+    commands: project.type === "Book" ? initQuillEditor(project) : project.type === "Todo" ? initTodos(project) : [{ name: "UNKNOWN TYPE!!", call: () => {
+    } }]
+  };
+}
+var projects = [
+  {
+    name: "Todo",
+    type: "Todo"
+  },
+  {
+    name: "Feyhaven",
+    type: "Book"
+  },
+  {
+    name: "Uninventing the Gun",
+    type: "Book"
+  }
+];
+function getCommands() {
+  return [
+    ...projects.map((project) => ({
+      name: `Project: ${project.name}`,
+      call: () => openProject(project)
+    })),
+    ...baseCommands,
+    ...state.openProject.commands
+  ];
+}
+function main() {
+  registerKeybindings();
+  openProject(projects[0]);
+}
+function registerKeybindings() {
   const bindings = {
-    "p": () => openCommandPallet(commands)
+    "p": () => openCommandPallet(getCommands())
   };
   window.onkeydown = (e) => {
     if (e.key in bindings && e.metaKey) {

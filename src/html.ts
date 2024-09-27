@@ -3,11 +3,12 @@
 export type Children = (string | Node)[]
 
 type HTMLBuilder = ((...c: Children) => HTMLElement) & {
+    with: (t: (e: HTMLElement) => void) => HTMLBuilder
     withId: (id: string) => HTMLBuilder
     withAttr: (name: string, value: string) => HTMLBuilder
     withClass: (...classes: string[]) => HTMLBuilder
     withStyle: (style: { [key: string]: string | number }) => HTMLBuilder
-    on: (event: string, cb: (e: KeyboardEvent) => void) => HTMLBuilder
+    on: (event: string, cb: (e: KeyboardEvent | MouseEvent) => void) => HTMLBuilder
 }
 
 export const _ : { [key: string]: HTMLBuilder } = new Proxy({}, {
@@ -17,6 +18,11 @@ export const _ : { [key: string]: HTMLBuilder } = new Proxy({}, {
         const builder = (...children: Children) => {
             el.replaceChildren(...children)
             return el
+        }
+
+        builder.with = (t: (el: HTMLElement) => void) => {
+            t(el)
+            return builder
         }
 
         builder.withId = (id: string) => {

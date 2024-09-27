@@ -1,18 +1,65 @@
-import { Command, openCommandPallet, Popup } from "./els/commandPallet"
+import { openCommandPallet } from "./els/commandPallet"
 import { initQuillEditor } from "./els/textEditor"
+import initTodos from "./els/todos"
 import { _ } from "./html"
+import { Project } from "./types"
 
-export default function main() {
-    const quillCommands = initQuillEditor()
-    registerKeybindings([
-        ...baseCommands,
-        ...quillCommands,
-    ])
+const state = {
+    openProject: {
+        name: "UNINIT",
+        commands: [
+            {
+                name: "UNINIT",
+                call: () => {}
+            }
+        ]
+    }
 }
 
-function registerKeybindings(commands: Command[]) {
+function openProject(project: Project) {
+    state.openProject = {
+        name: project.name,
+        commands: 
+            project.type === "Book" ? initQuillEditor(project) :
+            project.type === "Todo" ? initTodos(project) :
+                [ { name: "UNKNOWN TYPE!!", call: () => {} } ]
+    }
+}
+
+const projects: Project[] = [
+    {
+        name: "Todo",
+        type: "Todo",
+    },
+    {
+        name: "Feyhaven",
+        type: "Book",
+    },
+    {
+        name: "Uninventing the Gun",
+        type: "Book",
+    }
+]
+
+function getCommands() {
+    return [
+        ...projects.map((project) => ({
+            name: `Project: ${project.name}`,
+            call: () => openProject(project)
+        })),
+        ...baseCommands,
+        ...state.openProject.commands,
+    ]
+}
+
+export default function main() {
+    registerKeybindings()
+    openProject(projects[0])
+}
+
+function registerKeybindings() {
     const bindings = {
-        "p": () => openCommandPallet(commands)
+        "p": () => openCommandPallet(getCommands())
     }
 
     window.onkeydown = (e: KeyboardEvent) => {

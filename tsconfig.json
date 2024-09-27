@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
         "jsx": "preserve",
-        "lib": ["DOM", "ES2017"]
+        "lib": ["DOM", "ES2020"]
     }
 }
