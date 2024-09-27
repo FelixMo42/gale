@@ -9,10 +9,25 @@ body {
     font-family: 'Open Sans', sans-serif;
 }
 
+/* layout */
+
 #root {
-    max-width: 800px;
-    margin: auto;
+    display: flex;
+    flex-direction: row;
+
+    /* for full screen mode */
+    background-color: inherit;
 }
+
+main {
+    max-width: 800px;
+}
+
+#root>aside {
+    flex: 1;
+}
+
+/* ql */
 
 .ql-editor {
     min-height: 99vh;

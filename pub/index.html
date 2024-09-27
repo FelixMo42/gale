@@ -8,21 +8,25 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 
-        <!-- my css -->
-        <link rel="stylesheet" href="./style.css">
+        <!-- css -->
+        <link rel="stylesheet" href="./style.css" />
+        <link rel="stylesheet" href="./quill.css" />
 
         <!-- config -->
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link href="quill.css" rel="stylesheet" />
     </head>
     <body>
         <!-- root for script to attach too -->
-        <div id="root"></div>
+        <div id="root">
+            <aside class="left"></aside>
+            <main class="center"></main>
+            <aside class="right"></aside>
+        </div>
 
         <!-- we are live! -->
         <script type="module">
-            import main from "../out/index.js"
+            import main from "./index.js"
             main()
         </script>
     </body>
