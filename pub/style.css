@@ -7,6 +7,13 @@ body {
     /* default font stuff */
     color: #ccc;
     font-family: 'Open Sans', sans-serif;
+    font-size: 1.5rem;
+
+    overflow-x: hidden;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 /* layout */
@@ -27,24 +34,81 @@ main {
     flex: 1;
 }
 
+/* pop ups */
+
+.overlay {
+    /* take up whole screen */
+    position:fixed;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+
+    /* and color it gray */
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.overlay .popup {
+    background-color: #1e1e1e;
+    width: 800px;
+    margin: auto;
+    padding: 10px 10px;
+    margin-top: 100px;
+    border: 1px solid gray;
+    border-radius: 5px;
+}
+
+input {
+    /* layout */
+    display: block;
+    width: 100%;
+    padding: 10px 20px;
+
+    /* styling */
+    border: 2px solid teal;
+    border-radius: 5px;
+    outline: none !important;
+    background-color: none;
+    background-color: rgba(255, 255, 255, 0.15);
+
+    /* font reset */
+    font: inherit;
+    font-size: inherit;
+    color: inherit;
+}
+
+.command {
+    margin-top: 10px;
+    padding: 5px 20px;
+    border-radius: 5px;
+}
+
+.command:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.command.selected {
+    background-color: teal;
+}
+
 /* ql */
 
 .ql-editor {
     min-height: 99vh;
 }
 
-p {
-    font-size: 2em;
+.ql-editor p {
+    font-size: 2rem;
     text-align: justify;
 }
 
-h2 {
+.ql-editor h2 {
     text-align: center;
-    font-size: 2em !important;
+    font-size: 2rem !important;
     font-weight: normal;
 }
 
-h1 {
+.ql-editor h1 {
     text-align: center;
-    font-size: 3em !important;
+    font-size: 3rem !important;
 }

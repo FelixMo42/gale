@@ -1,36 +1,42 @@
-import Quill from "quill"
+import { Command, openCommandPallet, Popup } from "./els/commandPallet"
+import { initQuillEditor } from "./els/textEditor"
+import { _ } from "./html"
 
 export default function main() {
-    const quill = new Quill("main", {
-        modules: { toolbar: {
-            container: [
-                { 'header': 2 },
-                'bold',
-                'italic',
-                'underline',
-                'strike',
-                { 'align': 'center' },
-                'clean'
-            ]
-        },  },
-        theme: "bubble"
-    })
-
-    // load contents
-    quill.setContents(JSON.parse(localStorage.getItem("save")))
-
-    // auto save
-    quill.on("text-change", (_delta) => {
-        const data = quill.getContents()
-        const save = JSON.stringify(data)
-        localStorage.setItem("save", save)
-    })
-
-    // open command pallet
-    quill.keyboard.addBinding({
-        key: "p",
-        shortKey: true
-    }, () => {
-        alert(quill.getText().split(/\s/).length)
-    })
+    const quillCommands = initQuillEditor()
+    registerKeybindings([
+        ...baseCommands,
+        ...quillCommands,
+    ])
 }
+
+function registerKeybindings(commands: Command[]) {
+    const bindings = {
+        "p": () => openCommandPallet(commands)
+    }
+
+    window.onkeydown = (e: KeyboardEvent) => {
+        if (e.key in bindings && e.metaKey) {
+            // NOPE!
+            e.preventDefault()
+            e.stopPropagation()
+
+            // Do our stuff instead
+            bindings[e.key]()
+        }
+    }
+}
+
+const baseCommands = [
+    {
+        name: "Fullscreen",
+        call: () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen()
+            } else {
+                document.body.requestFullscreen()
+            }
+        }
+    }
+]
+

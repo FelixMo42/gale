@@ -2935,6 +2935,104 @@ var require_eventemitter3 = __commonJS({
   }
 });
 
+// src/html.ts
+var _ = new Proxy({}, {
+  get(_2, tag) {
+    const el = document.createElement(tag);
+    const builder = (...children) => {
+      el.replaceChildren(...children);
+      return el;
+    };
+    builder.withId = (id) => {
+      el.id = id;
+      return builder;
+    };
+    builder.withAttr = (name, value) => {
+      el.setAttribute(name, value);
+      return builder;
+    };
+    builder.withClass = (...classes) => {
+      el.classList.add(...classes);
+      return builder;
+    };
+    builder.withStyle = (style) => {
+      for (const [key, val] of Object.entries(style)) {
+        el.style.setProperty(
+          key,
+          typeof val === "number" ? `${val}px` : val
+        );
+      }
+      return builder;
+    };
+    builder.on = (event, cb) => {
+      el.addEventListener(event, cb);
+      return builder;
+    };
+    return builder;
+  }
+});
+
+// src/els/commandPallet.ts
+function openCommandPallet(commands) {
+  const input = _.input();
+  const commandElsBox = _.div();
+  let selected = 0;
+  renderCommands("");
+  const close = Popup(input, commandElsBox);
+  input.focus();
+  input.onkeydown = (e) => {
+    if (e.key === "ArrowUp") {
+      select(selected - 1);
+      e.preventDefault();
+    }
+    if (e.key === "ArrowDown") {
+      select(selected + 1);
+      e.preventDefault();
+    }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const commandEl = commandElsBox.children[selected];
+      commandEl.click();
+    }
+    if (e.key === "Escape") {
+      close();
+      e.preventDefault();
+    }
+  };
+  input.oninput = () => {
+    renderCommands(input.value);
+  };
+  function renderCommands(q) {
+    commandElsBox.replaceChildren(
+      ...commands.filter((command) => command.name.toUpperCase().includes(q.toUpperCase())).map(
+        (command) => _.div.withClass("command").on("click", () => {
+          close();
+          command.call();
+        })(command.name)
+      )
+    );
+    select(0);
+  }
+  function select(n) {
+    commandElsBox.children[selected]?.classList.remove("selected");
+    selected = n % commands.length;
+    while (selected < 0) {
+      selected += commands.length;
+    }
+    commandElsBox.children[selected]?.classList.add("selected");
+  }
+}
+function Popup(...children) {
+  const overlay = _.div.withClass("overlay").on("click", close)(
+    _.div.withClass("popup").on("click", (e) => e.stopPropagation())(...children)
+  );
+  document.getElementById("root").append(overlay);
+  function close() {
+    document.getElementById("root").removeChild(overlay);
+  }
+  return close;
+}
+
 // node_modules/lodash-es/_freeGlobal.js
 var freeGlobal = typeof global == "object" && global && global.Object === Object && global;
 var freeGlobal_default = freeGlobal;
@@ -11628,12 +11726,12 @@ var BubbleTheme = class extends BaseTheme {
     super(quill, options);
     this.quill.container.classList.add("ql-bubble");
   }
-  extendToolbar(toolbar) {
+  extendToolbar(toolbar2) {
     this.tooltip = new BubbleTooltip(this.quill, this.options.bounds);
-    if (toolbar.container != null) {
-      this.tooltip.root.appendChild(toolbar.container);
-      this.buildButtons(toolbar.container.querySelectorAll("button"), icons_default);
-      this.buildPickers(toolbar.container.querySelectorAll("select"), icons_default);
+    if (toolbar2.container != null) {
+      this.tooltip.root.appendChild(toolbar2.container);
+      this.buildButtons(toolbar2.container.querySelectorAll("button"), icons_default);
+      this.buildPickers(toolbar2.container.querySelectorAll("select"), icons_default);
     }
   }
 };
@@ -11720,18 +11818,18 @@ var SnowTheme = class extends BaseTheme {
     super(quill, options);
     this.quill.container.classList.add("ql-snow");
   }
-  extendToolbar(toolbar) {
-    if (toolbar.container != null) {
-      toolbar.container.classList.add("ql-snow");
-      this.buildButtons(toolbar.container.querySelectorAll("button"), icons_default);
-      this.buildPickers(toolbar.container.querySelectorAll("select"), icons_default);
+  extendToolbar(toolbar2) {
+    if (toolbar2.container != null) {
+      toolbar2.container.classList.add("ql-snow");
+      this.buildButtons(toolbar2.container.querySelectorAll("button"), icons_default);
+      this.buildPickers(toolbar2.container.querySelectorAll("select"), icons_default);
       this.tooltip = new SnowTooltip(this.quill, this.options.bounds);
-      if (toolbar.container.querySelector(".ql-link")) {
+      if (toolbar2.container.querySelector(".ql-link")) {
         this.quill.keyboard.addBinding({
           key: "k",
           shortKey: true
         }, (_range, context) => {
-          toolbar.handlers.link.call(toolbar, !context.format.link);
+          toolbar2.handlers.link.call(toolbar2, !context.format.link);
         });
       }
     }
@@ -11815,20 +11913,19 @@ core_default.register({
 }, true);
 var quill_default = core_default;
 
-// src/main.ts
-function main() {
+// src/els/textEditor.ts
+var toolbar = [
+  { "header": 2 },
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  { "align": "center" },
+  "clean"
+];
+function initQuillEditor() {
   const quill = new quill_default("main", {
-    modules: { toolbar: {
-      container: [
-        { "header": 2 },
-        "bold",
-        "italic",
-        "underline",
-        "strike",
-        { "align": "center" },
-        "clean"
-      ]
-    } },
+    modules: { toolbar: { container: toolbar } },
     theme: "bubble"
   });
   quill.setContents(JSON.parse(localStorage.getItem("save")));
@@ -11837,13 +11934,51 @@ function main() {
     const save = JSON.stringify(data);
     localStorage.setItem("save", save);
   });
-  quill.keyboard.addBinding({
-    key: "p",
-    shortKey: true
-  }, () => {
-    alert(quill.getText().split(/\s/).length);
-  });
+  return makeQuillCommands(quill);
 }
+function makeQuillCommands(quill) {
+  return [
+    {
+      name: "Word Count",
+      call: () => {
+        Popup(`Word Count: ${quill.getText().split(/\s/).length}`);
+      }
+    }
+  ];
+}
+
+// src/main.ts
+function main() {
+  const quillCommands = initQuillEditor();
+  registerKeybindings([
+    ...baseCommands,
+    ...quillCommands
+  ]);
+}
+function registerKeybindings(commands) {
+  const bindings = {
+    "p": () => openCommandPallet(commands)
+  };
+  window.onkeydown = (e) => {
+    if (e.key in bindings && e.metaKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      bindings[e.key]();
+    }
+  };
+}
+var baseCommands = [
+  {
+    name: "Fullscreen",
+    call: () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        document.body.requestFullscreen();
+      }
+    }
+  }
+];
 export {
   main as default
 };
