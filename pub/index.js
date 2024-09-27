@@ -12048,6 +12048,20 @@ function initTodos(project) {
 }
 
 // src/main.ts
+var projects = [
+  {
+    name: "Todo",
+    type: "Todo"
+  },
+  {
+    name: "Feyhaven",
+    type: "Book"
+  },
+  {
+    name: "Uninventing the Gun",
+    type: "Book"
+  }
+];
 var state = {
   openProject: {
     name: "UNINIT",
@@ -12067,20 +12081,6 @@ function openProject(project) {
     } }]
   };
 }
-var projects = [
-  {
-    name: "Todo",
-    type: "Todo"
-  },
-  {
-    name: "Feyhaven",
-    type: "Book"
-  },
-  {
-    name: "Uninventing the Gun",
-    type: "Book"
-  }
-];
 function getCommands() {
   return [
     ...projects.map((project) => ({

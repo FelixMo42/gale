@@ -1,6 +1,6 @@
 import { _ } from "../html";
 import { Project } from "../types";
-import { draggable } from "./draggable";
+import { draggable } from "./common/draggable";
 
 export default function initTodos(project: Project) {
     const todos = [

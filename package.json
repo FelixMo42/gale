@@ -10,12 +10,6 @@
     "type": "module",
     "dependencies": {
         "esbuild": "0.19.4",
-        "eventmonger": "5.0.0",
-        "gapi": "^0.0.3",
-        "quill": "2.0.2",
-        "uuid": "9.0.1"
-    },
-    "devDependencies": {
-        "@types/uuid": "9.0.7"
+        "quill": "2.0.2"
     }
 }

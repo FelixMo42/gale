@@ -1,8 +1,24 @@
+import { google } from "googleapis"
 import { openCommandPallet } from "./els/commandPallet"
 import { initQuillEditor } from "./els/textEditor"
 import initTodos from "./els/todos"
 import { _ } from "./html"
 import { Project } from "./types"
+
+const projects: Project[] = [
+    {
+        name: "Todo",
+        type: "Todo",
+    },
+    {
+        name: "Feyhaven",
+        type: "Book",
+    },
+    {
+        name: "Uninventing the Gun",
+        type: "Book",
+    }
+]
 
 const state = {
     openProject: {
@@ -25,21 +41,6 @@ function openProject(project: Project) {
                 [ { name: "UNKNOWN TYPE!!", call: () => {} } ]
     }
 }
-
-const projects: Project[] = [
-    {
-        name: "Todo",
-        type: "Todo",
-    },
-    {
-        name: "Feyhaven",
-        type: "Book",
-    },
-    {
-        name: "Uninventing the Gun",
-        type: "Book",
-    }
-]
 
 function getCommands() {
     return [
@@ -83,6 +84,14 @@ const baseCommands = [
             } else {
                 document.body.requestFullscreen()
             }
+        }
+    },
+    {
+        name: "Connect to google",
+        call: () => {
+            google.docs({
+                version: 'v1',
+            })
         }
     }
 ]
