@@ -2977,54 +2977,59 @@ var _ = new Proxy({}, {
 });
 
 // src/els/commandPallet.ts
+function filterCommands(commands, q) {
+  return commands.filter((c) => c.name.toUpperCase().includes(q.toUpperCase()));
+}
 function openCommandPallet(commands) {
-  const input = _.input();
-  const commandElsBox = _.div();
-  let selected = 0;
-  renderCommands("");
-  const close = Popup(input, commandElsBox);
-  input.focus();
-  input.onkeydown = (e) => {
-    if (e.key === "ArrowUp") {
-      select(selected - 1);
-      e.preventDefault();
-    }
-    if (e.key === "ArrowDown") {
-      select(selected + 1);
-      e.preventDefault();
-    }
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const commandEl = commandElsBox.children[selected];
-      commandEl.click();
-    }
-    if (e.key === "Escape") {
+  const input = _.input.with(keybindings({
+    "ArrowUp": () => listEl.selectPrev(),
+    "ArrowDown": () => listEl.selectNext(),
+    "Enter": () => listEl.getSelected().click(),
+    "Escape": () => close()
+  })).on("input", (e) => {
+    const value = e.target.value;
+    listEl.update(filterCommands(commands, value));
+  })();
+  const listEl = selectableList(
+    commands,
+    (command) => _.div.withClass("command").on("click", () => {
       close();
-      e.preventDefault();
+      command.call();
+    })(command.name)
+  );
+  const close = Popup(input, listEl.el);
+  input.focus();
+}
+function selectableList(data, view) {
+  const el = _.div(...data.map(view));
+  let selected = 0;
+  el.children[selected].classList.add("selected");
+  const self2 = {
+    el,
+    getSelected() {
+      return el.children[selected];
+    },
+    selectNext() {
+      self2.select(selected + 1);
+    },
+    selectPrev() {
+      self2.select(selected - 1);
+    },
+    select(n) {
+      self2.getSelected()?.classList.remove("selected");
+      selected = typeof n === "function" ? n(selected) : n;
+      selected %= el.children.length;
+      while (selected < 0) {
+        selected += el.children.length;
+      }
+      self2.getSelected().classList.add("selected");
+    },
+    update(data2) {
+      el.replaceChildren(...data2.map(view));
+      self2.select(0);
     }
   };
-  input.oninput = () => {
-    renderCommands(input.value);
-  };
-  function renderCommands(q) {
-    commandElsBox.replaceChildren(
-      ...commands.filter((command) => command.name.toUpperCase().includes(q.toUpperCase())).map(
-        (command) => _.div.withClass("command").on("click", () => {
-          close();
-          command.call();
-        })(command.name)
-      )
-    );
-    select(0);
-  }
-  function select(n) {
-    commandElsBox.children[selected]?.classList.remove("selected");
-    selected = n % commands.length;
-    while (selected < 0) {
-      selected += commands.length;
-    }
-    commandElsBox.children[selected]?.classList.add("selected");
-  }
+  return self2;
 }
 function Popup(...children) {
   const overlay = _.div.withClass("overlay").on("click", close)(
@@ -3035,6 +3040,16 @@ function Popup(...children) {
     document.getElementById("root").removeChild(overlay);
   }
   return close;
+}
+function keybindings(bindings) {
+  return (el) => {
+    el.onkeydown = (e) => {
+      if (e.key in bindings) {
+        bindings[e.key]();
+        e.preventDefault();
+      }
+    };
+  };
 }
 
 // node_modules/lodash-es/_freeGlobal.js

@@ -27,6 +27,7 @@ body {
 }
 
 main {
+    min-height: 100vh;
     width: 800px;
 }
 

@@ -5,87 +5,86 @@ export interface Command {
     call: () => void,
 }
 
+function filterCommands(commands: Command[], q: string, ): Command[] {
+    return commands.filter((c) => c.name.toUpperCase().includes(q.toUpperCase()))
+}
+
 export function openCommandPallet(commands: Command[]) {
     // create the command input
-    const input = _.input() as HTMLInputElement
-    const commandElsBox = _.div()
+    const input = _.input
+        .with(keybindings({
+            "ArrowUp": () => listEl.selectPrev(),
+            "ArrowDown": () => listEl.selectNext(),
+            "Enter": () => listEl.getSelected().click(),
+            "Escape": () => close(),
+        }))
+        .on("input", (e) => {
+            const value = (e.target as HTMLInputElement).value
+            listEl.update(filterCommands(commands, value))
+        })
+        () as HTMLInputElement
 
-    // default selected command
-    let selected = 0
-
-    renderCommands("")
+    // box for the commands
+    const listEl = selectableList(commands, (command) =>
+        _.div
+            .withClass("command")
+            .on("click", () => {
+                close()
+                command.call()
+            })
+            (command.name)
+    )
 
     // Display the popup
-    const close = Popup(input, commandElsBox)
+    const close = Popup(input, listEl.el)
 
     // Make sure the input if the selected element
     input.focus()
+}
 
-    input.onkeydown = (e) => {
-        // Go up one command
-        if (e.key === "ArrowUp") {
-            select(selected - 1)
-            e.preventDefault()
-        }
+/* UTILS */
 
-        // Go down one command
-        if (e.key === "ArrowDown") {
-            select(selected + 1)
-            e.preventDefault()   
-        }
+function selectableList<T>(data: T[], view: (d: T) => HTMLElement) {
+    const el = _.div(...data.map(view))
 
-        // Activate selected command
-        if (e.key === "Enter") {
-            e.preventDefault()
-            const commandEl = commandElsBox.children[selected] as HTMLElement
-            commandEl.click()
-        }
+    let selected = 0
 
-        // Leave the command palet
-        if (e.key === "Escape") {
-            close()
-            e.preventDefault()
-        }
-    }
+    el.children[selected].classList.add("selected")
+
+    const self = {
+        el,
+        getSelected() {
+            return el.children[selected] as HTMLElement
+        },
+        selectNext() {
+            self.select(selected + 1)
+        },
+        selectPrev() {
+            self.select(selected - 1)
+        },
+        select(n: number | ((n: number) => number)) {
+            // deselect old command
+            self.getSelected()?.classList.remove("selected")
+            
+            // if function, call it
+            selected = typeof n === "function" ? n(selected) : n
+
+            // wrap the number around
+            selected %= el.children.length
+            while (selected < 0) {
+                selected += el.children.length
+            }
     
-    input.oninput = () => {
-        renderCommands(input.value)
-    }
-
-    // render the commands
-    function renderCommands(q: string) {
-        commandElsBox.replaceChildren(
-            ...commands
-            .filter((command) => command.name.toUpperCase().includes(q.toUpperCase()))
-            .map((command) =>
-                _.div
-                    .withClass("command")
-                    .on("click", () => {
-                        close()
-                        command.call()
-                    })
-                    (command.name)
-            )
-        )
-
-        // select first element
-        select(0)
-    }
-
-    // select a command by number in list
-    function select(n: number) {
-        // deselect old command
-        commandElsBox.children[selected]?.classList.remove("selected")
-        
-        // wrap
-        selected = n % commands.length
-        while (selected < 0) {
-            selected += commands.length
+            // select new command
+            self.getSelected().classList.add("selected")
+        },
+        update(data: T[]) {
+            el.replaceChildren(...data.map(view))
+            self.select(0)
         }
-
-        // select new command
-        commandElsBox.children[selected]?.classList.add("selected")
     }
+
+    return self
 }
 
 export function Popup(...children: Children) {
@@ -109,4 +108,15 @@ export function Popup(...children: Children) {
     }
 
     return close
+}
+
+function keybindings(bindings: { [k: string]: () => void }) {
+    return (el: HTMLElement) => {
+        el.onkeydown = (e) => {
+            if (e.key in bindings) {
+                bindings[e.key]()
+                e.preventDefault()
+            }
+        }
+    } 
 }

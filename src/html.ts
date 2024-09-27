@@ -8,7 +8,7 @@ type HTMLBuilder = ((...c: Children) => HTMLElement) & {
     withAttr: (name: string, value: string) => HTMLBuilder
     withClass: (...classes: string[]) => HTMLBuilder
     withStyle: (style: { [key: string]: string | number }) => HTMLBuilder
-    on: (event: string, cb: (e: KeyboardEvent | MouseEvent) => void) => HTMLBuilder
+    on: (event: string, cb: (e: KeyboardEvent | MouseEvent | InputEvent) => void) => HTMLBuilder
 }
 
 export const _ : { [key: string]: HTMLBuilder } = new Proxy({}, {
