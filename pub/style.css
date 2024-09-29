@@ -8,8 +8,6 @@ body {
     color: #ccc;
     font-family: 'Open Sans', sans-serif;
     font-size: 1.5rem;
-
-    overflow-x: hidden;
 }
 
 * {

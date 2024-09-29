@@ -1,3 +1,7 @@
+.ql-container {
+    position: relative;
+}
+
 .ql-container.ql-disabled .ql-tooltip {
     visibility: hidden
 }

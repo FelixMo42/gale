@@ -2976,30 +2976,7 @@ var _ = new Proxy({}, {
   }
 });
 
-// src/els/commandPallet.ts
-function filterCommands(commands, q) {
-  return commands.filter((c) => c.name.toUpperCase().includes(q.toUpperCase()));
-}
-function openCommandPallet(commands) {
-  const input = _.input.with(keybindings({
-    "ArrowUp": () => listEl.selectPrev(),
-    "ArrowDown": () => listEl.selectNext(),
-    "Enter": () => listEl.getSelected().click(),
-    "Escape": () => close()
-  })).on("input", (e) => {
-    const value = e.target.value;
-    listEl.update(filterCommands(commands, value));
-  })();
-  const listEl = selectableList(
-    commands,
-    (command) => _.div.withClass("command").on("click", () => {
-      close();
-      command.call();
-    })(command.name)
-  );
-  const close = Popup(input, listEl.el);
-  input.focus();
-}
+// src/els/common/selectableList.ts
 function selectableList(data, view) {
   const el = _.div(...data.map(view));
   let selected = 0;
@@ -3030,6 +3007,31 @@ function selectableList(data, view) {
     }
   };
   return self2;
+}
+
+// src/els/commandPallet.ts
+function filterCommands(commands, q) {
+  return commands.filter((c) => c.name.toUpperCase().includes(q.toUpperCase()));
+}
+function openCommandPallet(commands) {
+  const input = _.input.with(keybindings({
+    "ArrowUp": () => listEl.selectPrev(),
+    "ArrowDown": () => listEl.selectNext(),
+    "Enter": () => listEl.getSelected().click(),
+    "Escape": () => close()
+  })).on("input", (e) => {
+    const value = e.target.value;
+    listEl.update(filterCommands(commands, value));
+  })();
+  const listEl = selectableList(
+    commands,
+    (command) => _.div.withClass("command").on("click", () => {
+      close();
+      command.call();
+    })(command.name)
+  );
+  const close = Popup(input, listEl.el);
+  input.focus();
 }
 function Popup(...children) {
   const overlay = _.div.withClass("overlay").on("click", close)(
@@ -11966,7 +11968,7 @@ function makeQuillCommands(quill) {
   ];
 }
 
-// src/els/draggable.ts
+// src/els/common/draggable.ts
 function draggable(child) {
   return _.div.with((el) => el.onmousedown = (e) => pickup(e, el))(child);
 }
@@ -12032,6 +12034,9 @@ function initTodos(project) {
     },
     {
       text: "Write for 1 hour"
+    },
+    {
+      text: "Make tacocat story"
     }
   ];
   document.querySelector("main").replaceChildren(_.div.withClass("todos")(
@@ -12114,7 +12119,7 @@ var baseCommands = [
       if (document.fullscreenElement) {
         document.exitFullscreen();
       } else {
-        document.body.requestFullscreen();
+        document.querySelector("#root").requestFullscreen();
       }
     }
   }

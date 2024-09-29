@@ -9,6 +9,9 @@ export default function initTodos(project: Project) {
         },
         {
             text: "Write for 1 hour",
+        },
+        {
+            text: "Make tacocat story",
         }
     ]
 

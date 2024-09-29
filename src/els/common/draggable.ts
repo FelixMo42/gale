@@ -1,4 +1,4 @@
-import { _ } from "../html"
+import { _ } from "../../html"
 
 export function draggable(child: HTMLElement) {
     return _.div

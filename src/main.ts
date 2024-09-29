@@ -82,17 +82,8 @@ const baseCommands = [
             if (document.fullscreenElement) {
                 document.exitFullscreen()
             } else {
-                document.body.requestFullscreen()
+                document.querySelector("#root").requestFullscreen()
             }
-        }
-    },
-    {
-        name: "Connect to google",
-        call: () => {
-            google.docs({
-                version: 'v1',
-            })
         }
     }
 ]
-
