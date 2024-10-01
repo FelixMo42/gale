@@ -1,9 +1,19 @@
+import { emitUpdate } from "../../events"
 import { _ } from "../../html"
 
-export function draggable(child: HTMLElement) {
-    return _.div
-        .with((el) => el.onmousedown = (e) => pickup(e, el))
-        (child)
+interface HasID {
+    id: string
+}
+
+export function draggableList<T extends HasID>(data: T[], view: (t: T) => HTMLElement) {
+    return data.map(item => {
+        const el = _.div
+            .withId(item.id)
+            .on("mousedown", (e: MouseEvent) => pickup(e, el, data))
+            (view(item))
+
+        return el
+    })
 }
 
 const drag : {
@@ -11,12 +21,14 @@ const drag : {
     selected?: HTMLElement,
     start?: number
     rawStart?: number
+    data?: HasID[]
 } = {}
 
-function pickup(e: MouseEvent, el: HTMLElement) {
+function pickup(e: MouseEvent, el: HTMLElement, data: HasID[]) {
     drag.maybeSelected = el
     drag.start = e.y - el.offsetTop
     drag.rawStart = e.y
+    drag.data = data
 }
 
 function offsetView(e: MouseEvent) {
@@ -54,24 +66,48 @@ document.onmousemove = (e: MouseEvent) => {
 
         // Get the position of each child
         const list = drag.selected.parentElement.children
-        const items = []
+        
+        // Keep track of the info for each element
+        const id2y = new Map<string, number>()
+        const id2el = new Map<string, Element>()
+
+        // For each item, calculate where it is 
         for (let i = 0; i < list.length; i++) {
             const el = list.item(i)
             const rect = el.getBoundingClientRect()
             const y = (drag.selected === el) ? e.clientY
                 : rect.top + rect.height / 2
-            items.push({ y, el })
+            
+            id2y.set(el.id, y)
+            id2el.set(el.id, el)
         }
 
-        drag.selected.parentElement.replaceChildren(
-            ...items
-                .sort((a, b) => a.y - b.y)
-                .map(({ el }) => el)
-        )
+        let isOutOfOrder = false
+        for (let i = 1; i < drag.data.length; i++) {
+            if (id2y.get(drag.data[i - 1].id) > id2y.get(drag.data[i].id)) {
+                isOutOfOrder = true
+                break
+            }
+        }
 
+        if (isOutOfOrder) {
+            console.log("OUT OF ORDER!")
+
+            // Sort into the new order
+            drag.data.sort((a, b) => id2y.get(a.id) - id2y.get(b.id))
+
+            // Update the view of the list to reflect the new order
+            drag.selected.parentElement.replaceChildren(...drag.data.map(({ id }) => id2el.get(id)))
+
+            // Tell the world our array has changed
+            emitUpdate(drag.data)
+        }
+
+        // Offset the item we are currently holding
         offsetView(e)
 
-        e.preventDefault()
+        // Make sure nothing else happens
+        e.preventDefault()        
     }
 }
 

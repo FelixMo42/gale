@@ -940,13 +940,13 @@ var require_lodash = __commonJS({
     var nativeIsBuffer2 = Buffer4 ? Buffer4.isBuffer : void 0;
     var nativeKeys2 = overArg2(Object.keys, Object);
     var DataView2 = getNative2(root2, "DataView");
-    var Map2 = getNative2(root2, "Map");
+    var Map3 = getNative2(root2, "Map");
     var Promise3 = getNative2(root2, "Promise");
     var Set2 = getNative2(root2, "Set");
     var WeakMap3 = getNative2(root2, "WeakMap");
     var nativeCreate2 = getNative2(Object, "create");
     var dataViewCtorString2 = toSource2(DataView2);
-    var mapCtorString2 = toSource2(Map2);
+    var mapCtorString2 = toSource2(Map3);
     var promiseCtorString2 = toSource2(Promise3);
     var setCtorString2 = toSource2(Set2);
     var weakMapCtorString2 = toSource2(WeakMap3);
@@ -1044,7 +1044,7 @@ var require_lodash = __commonJS({
     function mapCacheClear2() {
       this.__data__ = {
         "hash": new Hash2(),
-        "map": new (Map2 || ListCache2)(),
+        "map": new (Map3 || ListCache2)(),
         "string": new Hash2()
       };
     }
@@ -1085,7 +1085,7 @@ var require_lodash = __commonJS({
       var cache = this.__data__;
       if (cache instanceof ListCache2) {
         var pairs = cache.__data__;
-        if (!Map2 || pairs.length < LARGE_ARRAY_SIZE2 - 1) {
+        if (!Map3 || pairs.length < LARGE_ARRAY_SIZE2 - 1) {
           pairs.push([key, value]);
           return this;
         }
@@ -1282,7 +1282,7 @@ var require_lodash = __commonJS({
     }
     var getSymbols2 = nativeGetSymbols3 ? overArg2(nativeGetSymbols3, Object) : stubArray2;
     var getTag2 = baseGetTag2;
-    if (DataView2 && getTag2(new DataView2(new ArrayBuffer(1))) != dataViewTag6 || Map2 && getTag2(new Map2()) != mapTag7 || Promise3 && getTag2(Promise3.resolve()) != promiseTag2 || Set2 && getTag2(new Set2()) != setTag7 || WeakMap3 && getTag2(new WeakMap3()) != weakMapTag4) {
+    if (DataView2 && getTag2(new DataView2(new ArrayBuffer(1))) != dataViewTag6 || Map3 && getTag2(new Map3()) != mapTag7 || Promise3 && getTag2(Promise3.resolve()) != promiseTag2 || Set2 && getTag2(new Set2()) != setTag7 || WeakMap3 && getTag2(new WeakMap3()) != weakMapTag4) {
       getTag2 = function(value) {
         var result = objectToString2.call(value), Ctor = result == objectTag6 ? value.constructor : void 0, ctorString = Ctor ? toSource2(Ctor) : void 0;
         if (ctorString) {
@@ -1564,13 +1564,13 @@ var require_lodash2 = __commonJS({
     var nativeIsBuffer2 = Buffer4 ? Buffer4.isBuffer : void 0;
     var nativeKeys2 = overArg2(Object.keys, Object);
     var DataView2 = getNative2(root2, "DataView");
-    var Map2 = getNative2(root2, "Map");
+    var Map3 = getNative2(root2, "Map");
     var Promise3 = getNative2(root2, "Promise");
     var Set2 = getNative2(root2, "Set");
     var WeakMap3 = getNative2(root2, "WeakMap");
     var nativeCreate2 = getNative2(Object, "create");
     var dataViewCtorString2 = toSource2(DataView2);
-    var mapCtorString2 = toSource2(Map2);
+    var mapCtorString2 = toSource2(Map3);
     var promiseCtorString2 = toSource2(Promise3);
     var setCtorString2 = toSource2(Set2);
     var weakMapCtorString2 = toSource2(WeakMap3);
@@ -1676,7 +1676,7 @@ var require_lodash2 = __commonJS({
       this.size = 0;
       this.__data__ = {
         "hash": new Hash2(),
-        "map": new (Map2 || ListCache2)(),
+        "map": new (Map3 || ListCache2)(),
         "string": new Hash2()
       };
     }
@@ -1741,7 +1741,7 @@ var require_lodash2 = __commonJS({
       var data = this.__data__;
       if (data instanceof ListCache2) {
         var pairs = data.__data__;
-        if (!Map2 || pairs.length < LARGE_ARRAY_SIZE2 - 1) {
+        if (!Map3 || pairs.length < LARGE_ARRAY_SIZE2 - 1) {
           pairs.push([key, value]);
           this.size = ++data.size;
           return this;
@@ -2021,7 +2021,7 @@ var require_lodash2 = __commonJS({
       });
     };
     var getTag2 = baseGetTag2;
-    if (DataView2 && getTag2(new DataView2(new ArrayBuffer(1))) != dataViewTag6 || Map2 && getTag2(new Map2()) != mapTag7 || Promise3 && getTag2(Promise3.resolve()) != promiseTag2 || Set2 && getTag2(new Set2()) != setTag7 || WeakMap3 && getTag2(new WeakMap3()) != weakMapTag4) {
+    if (DataView2 && getTag2(new DataView2(new ArrayBuffer(1))) != dataViewTag6 || Map3 && getTag2(new Map3()) != mapTag7 || Promise3 && getTag2(Promise3.resolve()) != promiseTag2 || Set2 && getTag2(new Set2()) != setTag7 || WeakMap3 && getTag2(new WeakMap3()) != weakMapTag4) {
       getTag2 = function(value) {
         var result = baseGetTag2(value), Ctor = result == objectTag6 ? value.constructor : void 0, ctorString = Ctor ? toSource2(Ctor) : "";
         if (ctorString) {
@@ -2795,15 +2795,15 @@ var require_eventemitter3 = __commonJS({
       this._eventsCount = 0;
     }
     EventEmitter2.prototype.eventNames = function eventNames() {
-      var names = [], events, name;
+      var names = [], events2, name;
       if (this._eventsCount === 0)
         return names;
-      for (name in events = this._events) {
-        if (has.call(events, name))
+      for (name in events2 = this._events) {
+        if (has.call(events2, name))
           names.push(prefix ? name.slice(1) : name);
       }
       if (Object.getOwnPropertySymbols) {
-        return names.concat(Object.getOwnPropertySymbols(events));
+        return names.concat(Object.getOwnPropertySymbols(events2));
       }
       return names;
     };
@@ -2901,13 +2901,13 @@ var require_eventemitter3 = __commonJS({
           clearEvent(this, evt);
         }
       } else {
-        for (var i = 0, events = [], length = listeners.length; i < length; i++) {
+        for (var i = 0, events2 = [], length = listeners.length; i < length; i++) {
           if (listeners[i].fn !== fn || once && !listeners[i].once || context && listeners[i].context !== context) {
-            events.push(listeners[i]);
+            events2.push(listeners[i]);
           }
         }
-        if (events.length)
-          this._events[evt] = events.length === 1 ? events[0] : events;
+        if (events2.length)
+          this._events[evt] = events2.length === 1 ? events2[0] : events2;
         else
           clearEvent(this, evt);
       }
@@ -3820,8 +3820,8 @@ ListCache.prototype.set = listCacheSet_default;
 var ListCache_default = ListCache;
 
 // node_modules/lodash-es/_Map.js
-var Map = getNative_default(root_default, "Map");
-var Map_default = Map;
+var Map2 = getNative_default(root_default, "Map");
+var Map_default = Map2;
 
 // node_modules/lodash-es/_mapCacheClear.js
 function mapCacheClear() {
@@ -11971,15 +11971,34 @@ function makeQuillCommands(quill) {
   ];
 }
 
+// src/events.ts
+var events = /* @__PURE__ */ new Map();
+function listen(item, cb) {
+  if (events.has(item)) {
+    events.get(item).push(cb);
+  } else {
+    events.set(item, [cb]);
+  }
+}
+function emitUpdate(item) {
+  if (events.has(item)) {
+    events.get(item).forEach((cb) => cb());
+  }
+}
+
 // src/els/common/draggable.ts
-function draggable(child) {
-  return _.div.with((el) => el.onmousedown = (e) => pickup(e, el))(child);
+function draggableList(data, view) {
+  return data.map((item) => {
+    const el = _.div.withId(item.id).on("mousedown", (e) => pickup(e, el, data))(view(item));
+    return el;
+  });
 }
 var drag = {};
-function pickup(e, el) {
+function pickup(e, el, data) {
   drag.maybeSelected = el;
   drag.start = e.y - el.offsetTop;
   drag.rawStart = e.y;
+  drag.data = data;
 }
 function offsetView(e) {
   const y = e.clientY - drag.selected.offsetTop - drag.start;
@@ -12009,16 +12028,28 @@ document.onmousemove = (e) => {
     if (e.buttons !== 1)
       return putdown();
     const list = drag.selected.parentElement.children;
-    const items = [];
+    const id2y = /* @__PURE__ */ new Map();
+    const id2el = /* @__PURE__ */ new Map();
     for (let i = 0; i < list.length; i++) {
       const el = list.item(i);
       const rect = el.getBoundingClientRect();
       const y = drag.selected === el ? e.clientY : rect.top + rect.height / 2;
-      items.push({ y, el });
+      id2y.set(el.id, y);
+      id2el.set(el.id, el);
     }
-    drag.selected.parentElement.replaceChildren(
-      ...items.sort((a, b) => a.y - b.y).map(({ el }) => el)
-    );
+    let isOutOfOrder = false;
+    for (let i = 1; i < drag.data.length; i++) {
+      if (id2y.get(drag.data[i - 1].id) > id2y.get(drag.data[i].id)) {
+        isOutOfOrder = true;
+        break;
+      }
+    }
+    if (isOutOfOrder) {
+      console.log("OUT OF ORDER!");
+      drag.data.sort((a, b) => id2y.get(a.id) - id2y.get(b.id));
+      drag.selected.parentElement.replaceChildren(...drag.data.map(({ id }) => id2el.get(id)));
+      emitUpdate(drag.data);
+    }
     offsetView(e);
     e.preventDefault();
   }
@@ -12030,23 +12061,25 @@ function putdown() {
 }
 
 // src/els/todos.ts
-function todoView(todo) {
-  return draggable(
-    _.div.withClass("todo")(
-      _.input.withAttr("type", "checkbox").withAttr("checked", todo.done)(),
-      _.input.withAttr("type", "text").withAttr("value", todo.text)()
-    )
-  );
+function todoView(todo, onchange) {
+  const checkbox = _.input.withAttr("type", "checkbox").withAttr("checked", todo.done).on("change", () => {
+    todo.done = checkbox.checked;
+    onchange();
+  })();
+  const text = _.input.withAttr("type", "text").withAttr("value", todo.text).on("input", () => {
+    todo.text = text.value;
+    onchange();
+  })();
+  return _.div.withClass("todo")(checkbox, text);
 }
 function initTodos(project) {
-  const todos = [
-    {
-      text: "test"
-    }
-  ];
+  const savePath = `todo/${project.name}`;
+  const todos = JSON.parse(localStorage.getItem(savePath)) || [];
+  const onchange = () => localStorage.setItem(savePath, JSON.stringify(todos));
+  listen(todos, onchange);
   function render() {
     document.querySelector("main").replaceChildren(_.div.withClass("todos")(
-      ...todos.map(todoView)
+      ...draggableList(todos, (todo) => todoView(todo, onchange))
     ));
   }
   render();
@@ -12054,7 +12087,11 @@ function initTodos(project) {
     {
       name: "Add Todo",
       call: () => askText("New Todo", (text) => {
-        todos.push({ text });
+        todos.push({
+          id: Date.now().toString(),
+          text
+        });
+        onchange();
         render();
       })
     }

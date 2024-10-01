@@ -1,52 +1,67 @@
+import { listen } from "../events";
 import { _ } from "../html";
 import { Project } from "../types";
 import { Popup } from "./commandPallet";
-import { draggable } from "./common/draggable";
+import { draggableList } from "./common/draggable";
 
 interface Todo {
+    id: string,
     text: string,
     done?: boolean
 }
 
-function todoView(todo: Todo) {
-    return draggable(
-        _.div
-        .withClass("todo")
-        (
-            _.input
-                .withAttr("type", "checkbox")
-                .withAttr("checked", todo.done)
-                (),
-            _.input
-                .withAttr("type", "text")
-                .withAttr("value", todo.text)
-                ()
-        )
-    )
+function todoView(todo: Todo, onchange: () => void) {
+    const checkbox = _.input
+        .withAttr("type", "checkbox")
+        .withAttr("checked", todo.done)
+        .on("change", () => {
+            todo.done = checkbox.checked
+            onchange()
+        })() as HTMLInputElement
+
+    const text = _.input
+        .withAttr("type", "text")
+        .withAttr("value", todo.text)
+        .on("input", () => {
+            todo.text = text.value
+            onchange()
+        })() as HTMLInputElement
+
+    return _.div.withClass("todo")(checkbox, text)
 }
 
 export default function initTodos(project: Project) {
-    const todos: Todo[] = [
-        {
-            text: "test",
-        }
-    ]
+    const savePath = `todo/${project.name}`
+    const todos: Todo[] = JSON.parse(localStorage.getItem(savePath)) || []
+
+    // when the array changes, save it
+    // we have to use to events lib to hook into changes caused by draggable
+    const onchange = () => localStorage.setItem(savePath, JSON.stringify(todos))
+    listen(todos, onchange)
 
     function render() {
         document
             .querySelector("main")
             .replaceChildren(_.div.withClass("todos")(
-                ...todos.map(todoView)
+                ...draggableList(todos, (todo) => todoView(todo, onchange))
             ))
     }
 
     render()
 
+
     return [
         {
             name: "Add Todo",
             call: () => askText("New Todo", (text) => {
-                todos.push({ text })
+                // add the item with a new unique id
+                todos.push({
+                    id: Date.now().toString(),
+                    text
+                })
+
+                // tell the world we have added a new todo item
+                onchange()
                 render()
             })
         }

@@ -22,8 +22,7 @@ export function openCommandPallet(commands: Command[]) {
         .on("input", (e) => {
             const value = (e.target as HTMLInputElement).value
             listEl.update(filterCommands(commands, value))
-        })
-        () as HTMLInputElement
+        })() as HTMLInputElement
 
     // box for the commands
     const listEl = selectableList(commands, (command) =>
