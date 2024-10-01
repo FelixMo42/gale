@@ -2952,6 +2952,9 @@ var _ = new Proxy({}, {
       return builder;
     };
     builder.withAttr = (name, value) => {
+      if (name === "checked" && !value) {
+        return builder;
+      }
       el.setAttribute(name, value);
       return builder;
     };
@@ -12027,29 +12030,45 @@ function putdown() {
 }
 
 // src/els/todos.ts
+function todoView(todo) {
+  return draggable(
+    _.div.withClass("todo")(
+      _.input.withAttr("type", "checkbox").withAttr("checked", todo.done)(),
+      _.input.withAttr("type", "text").withAttr("value", todo.text)()
+    )
+  );
+}
 function initTodos(project) {
   const todos = [
     {
-      text: "Apply to jobs"
-    },
-    {
-      text: "Write for 1 hour"
-    },
-    {
-      text: "Make tacocat story"
+      text: "test"
     }
   ];
-  document.querySelector("main").replaceChildren(_.div.withClass("todos")(
-    ...todos.map(
-      (todo) => draggable(
-        _.div.withClass("todo")(
-          _.input.withAttr("type", "checkbox")(),
-          _.div(todo.text)
-        )
-      )
-    )
-  ));
-  return [];
+  function render() {
+    document.querySelector("main").replaceChildren(_.div.withClass("todos")(
+      ...todos.map(todoView)
+    ));
+  }
+  render();
+  return [
+    {
+      name: "Add Todo",
+      call: () => askText("New Todo", (text) => {
+        todos.push({ text });
+        render();
+      })
+    }
+  ];
+}
+async function askText(name, cb) {
+  const input = _.input.on("keydown", (e) => {
+    if (e.key === "Enter") {
+      exit();
+      cb(input.value);
+    }
+  })();
+  const exit = Popup(_.label(name), input);
+  input.select();
 }
 
 // src/main.ts
@@ -12088,12 +12107,12 @@ function openProject(project) {
 }
 function getCommands() {
   return [
+    ...state.openProject.commands,
+    ...baseCommands,
     ...projects.map((project) => ({
       name: `Project: ${project.name}`,
       call: () => openProject(project)
-    })),
-    ...baseCommands,
-    ...state.openProject.commands
+    }))
   ];
 }
 function main() {
@@ -12121,6 +12140,11 @@ var baseCommands = [
       } else {
         document.querySelector("#root").requestFullscreen();
       }
+    }
+  },
+  {
+    name: "Connect to Google",
+    call: async () => {
     }
   }
 ];

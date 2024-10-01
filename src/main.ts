@@ -1,4 +1,3 @@
-import { google } from "googleapis"
 import { openCommandPallet } from "./els/commandPallet"
 import { initQuillEditor } from "./els/textEditor"
 import initTodos from "./els/todos"
@@ -44,12 +43,12 @@ function openProject(project: Project) {
 
 function getCommands() {
     return [
+        ...state.openProject.commands,
+        ...baseCommands,
         ...projects.map((project) => ({
             name: `Project: ${project.name}`,
             call: () => openProject(project)
         })),
-        ...baseCommands,
-        ...state.openProject.commands,
     ]
 }
 
@@ -84,6 +83,12 @@ const baseCommands = [
             } else {
                 document.querySelector("#root").requestFullscreen()
             }
+        }
+    },
+    {
+        name: "Connect to Google",
+        call: async () => {
+            
         }
     }
 ]

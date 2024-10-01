@@ -33,6 +33,15 @@ main {
     flex: 1;
 }
 
+/* reset */
+
+input {
+    /* font reset */
+    font: inherit;
+    font-size: inherit;
+    color: inherit;
+}
+
 /* pop ups */
 
 .overlay {
@@ -57,6 +66,15 @@ main {
     border-radius: 5px;
 }
 
+
+.overlay label {
+    display: block;
+    text-align: center;
+    padding-bottom: 20px;
+    padding-top: 10px;
+    font-size: 1.2em;
+}
+
 .overlay input {
     /* layout */
     display: block;
@@ -70,11 +88,6 @@ main {
     outline: none !important;
     background-color: none;
     background-color: rgba(255, 255, 255, 0.15);
-
-    /* font reset */
-    font: inherit;
-    font-size: inherit;
-    color: inherit;
 }
 
 .command {
@@ -103,11 +116,6 @@ main {
     border-radius: 5px;
 }
 
-.todo div {
-    flex: 1;
-    margin-left: 10px;
-}
-
 .todo:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
@@ -116,6 +124,16 @@ main {
     user-select: none;
     position: relative;
     cursor: grabbing;
+}
+
+.todo input[type=text] {
+    flex: 1;
+    display: block;
+    margin-left: 10px;
+
+    background: none;
+    border: none;
+    outline: none !important;
 }
 
 /* ql */
