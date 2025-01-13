@@ -17,16 +17,13 @@
     </head>
     <body>
         <!-- root for script to attach too -->
-        <div id="root">
-            <aside class="left"></aside>
-            <main class="center"></main>
-            <aside class="right"></aside>
+        <div id="main">
         </div>
 
         <!-- we are live! -->
         <script type="module">
             import main from "./index.js"
-            main()
+            document.getElementById("main").replaceChildren(main())
         </script>
     </body>
 </html>

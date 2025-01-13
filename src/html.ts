@@ -1,6 +1,6 @@
 // BASIC BUILDER //
 
-export type Children = (string | Node)[]
+export type Children = (string | number | Node)[]
 
 type HTMLBuilder = ((...c: Children) => HTMLElement) & {
     with: (t: (e: HTMLElement) => void) => HTMLBuilder
@@ -12,11 +12,19 @@ type HTMLBuilder = ((...c: Children) => HTMLElement) & {
 }
 
 export const _ : { [key: string]: HTMLBuilder } = new Proxy({}, {
-    get(_, tag: string): HTMLBuilder {
+    get(na, tag: string): HTMLBuilder {
         const el = document.createElement(tag)
         
         const builder = (...children: Children) => {
-            el.replaceChildren(...children)
+            el.replaceChildren(...children.map((child) => {
+                if (typeof child === "number") {
+                    return _.span(String(child))
+                } else if (typeof child === "string" && tag !== "span") {
+                    return _.span(child)
+                } else {
+                    return child
+                }
+            }))
             return el
         }
 
@@ -66,3 +74,15 @@ export const _ : { [key: string]: HTMLBuilder } = new Proxy({}, {
         return builder
     }
 })
+
+export function flex(...children: Children) {
+    return _.div.withClass("flex")(...children)
+}
+
+export function col(...children: Children) {
+    return _.div.withClass("col")(...children)
+}
+
+export function row(...children: Children) {
+    return _.div.withClass("row")(...children)
+}

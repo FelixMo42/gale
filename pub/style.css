@@ -7,14 +7,116 @@ body {
     /* default font stuff */
     color: #ccc;
     font-family: 'Open Sans', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
 }
 
 * {
     box-sizing: border-box;
 }
 
+/* calender */
+
+.day {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-align: center;
+}
+
+*:has(> .calevent) {
+    position: relative;
+}
+
+.shadow {
+    display: block;
+    padding: 0px 5px;
+    padding-bottom: 50px;
+}
+
+.calevent {
+    background-size: cover;
+    background-color: darkgoldenrod;
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    text-emphasis-color: rgba(0, 0, 0, 0.5);
+    text-align: left;
+    background-color: #00008b;
+}
+
+.calevent:first-child {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.calevent:last-child {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
 /* layout */
+
+h1 {
+    margin: auto;
+    border-bottom: 1px solid;
+}
+
+.box {
+    background-color: #006060;
+    border-radius: 5px;
+}
+
+.box label {
+    display: block;
+    text-align: center;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.pad {
+    padding: 5px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex {
+    flex: 1;
+}
+
+.center {
+    text-align: center;
+}
+
+.i {
+    font-style: italic;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+button {
+    font-size: inherit;
+    color: inherit;
+    outline: none;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: none;
+}
+
+button:hover {
+    opacity: 70%;
+    cursor: pointer;
+}
+
+#main {
+    width: 800px;
+    padding: 10px;
+    margin: auto;
+}
 
 #root {
     display: flex;
@@ -36,7 +138,6 @@ main {
 /* reset */
 
 input {
-    /* font reset */
     font: inherit;
     font-size: inherit;
     color: inherit;
@@ -65,7 +166,6 @@ input {
     border: 1px solid gray;
     border-radius: 5px;
 }
-
 
 .overlay label {
     display: block;

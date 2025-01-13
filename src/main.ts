@@ -1,94 +1,38 @@
-import { openCommandPallet } from "./els/commandPallet"
-import { initQuillEditor } from "./els/textEditor"
-import initTodos from "./els/todos"
-import { _ } from "./html"
-import { Project } from "./types"
+import CalenderView, { getCurrentCalenderTask } from "./els/calender"
+import { _, Children, col, flex, row } from "./html"
 
-const projects: Project[] = [
-    {
-        name: "Todo",
-        type: "Todo",
-    },
-    {
-        name: "Feyhaven",
-        type: "Book",
-    },
-    {
-        name: "Uninventing the Gun",
-        type: "Book",
-    }
-]
+function NowView() {
+    const calenderEvent = getCurrentCalenderTask()
 
-const state = {
-    openProject: {
-        name: "UNINIT",
-        commands: [
-            {
-                name: "UNINIT",
-                call: () => {}
-            }
-        ]
-    }
+    return box(
+        _.label("What should I be doing right now?"),
+        pad(
+            row(
+                flex(`Right now from calender: `, _.span.withClass("underline")(calenderEvent[0].name)),
+                button()
+            )
+        )
+    )
 }
 
-function openProject(project: Project) {
-    state.openProject = {
-        name: project.name,
-        commands: 
-            project.type === "Book" ? initQuillEditor(project) :
-            project.type === "Todo" ? initTodos(project) :
-                [ { name: "UNKNOWN TYPE!!", call: () => {} } ]
-    }
+function button() {
+    return _.button("dismiss")
 }
 
-function getCommands() {
-    return [
-        ...state.openProject.commands,
-        ...baseCommands,
-        ...projects.map((project) => ({
-            name: `Project: ${project.name}`,
-            call: () => openProject(project)
-        })),
-    ]
+function pad(...children: Children) {
+    return _.div.withClass("pad")(...children)
+}
+
+function box(...children: Children) {
+    return _.div.withClass("box")(...children)
 }
 
 export default function main() {
-    registerKeybindings()
-    openProject(projects[0])
+    return col(
+        _.h1("My Second Brain"),
+        _.br(),
+        NowView(),
+        _.br(),
+        CalenderView()
+    )
 }
-
-function registerKeybindings() {
-    const bindings = {
-        "p": () => openCommandPallet(getCommands())
-    }
-
-    window.onkeydown = (e: KeyboardEvent) => {
-        if (e.key in bindings && e.metaKey) {
-            // NOPE!
-            e.preventDefault()
-            e.stopPropagation()
-
-            // Do our stuff instead
-            bindings[e.key]()
-        }
-    }
-}
-
-const baseCommands = [
-    {
-        name: "Fullscreen",
-        call: () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen()
-            } else {
-                document.querySelector("#root").requestFullscreen()
-            }
-        }
-    },
-    {
-        name: "Connect to Google",
-        call: async () => {
-            
-        }
-    }
-]
