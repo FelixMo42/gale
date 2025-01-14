@@ -39,9 +39,12 @@ body {
     position: absolute;
     left: 2px;
     right: 2px;
-    text-emphasis-color: rgba(0, 0, 0, 0.5);
     text-align: left;
     background-color: #00008b;
+}
+
+.calevent:not(:last-child) {
+    border-bottom: 3px solid #B8B398;
 }
 
 .calevent:first-child {
@@ -59,6 +62,7 @@ body {
 h1 {
     margin: auto;
     border-bottom: 1px solid;
+    width: 100%;
 }
 
 .box {
@@ -66,11 +70,42 @@ h1 {
     border-radius: 5px;
 }
 
+.box.green {
+    background-color: green;
+}
+
+.box.blue {
+    background-color: #4682b4;
+}
+
+.box.red {
+    background-color: #CB6015;
+}
+
 .box label {
     display: block;
     text-align: center;
     padding: 5px;
     background-color: rgba(0, 0, 0, 0.5);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.row:has(> .box) {
+    gap: 5px;
+}
+
+.col:has(> .box) {
+    gap: 5px;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+}
+
+.row > .box {
+    flex: 1;
 }
 
 .pad {

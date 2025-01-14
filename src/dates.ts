@@ -24,7 +24,7 @@ function makeRepeatCalenderSource({ name, schedule }: CalenderSourceProps) {
     return (q: Date) => daysOfTheWeek.includes(q.getDay())
 }
 
-function makeSingleDayCalenderSource({ name, schedule }: CalenderSourceProps) {
+function makeSingleDayCalenderSource({ schedule }: CalenderSourceProps) {
     const { year, month, date } = parseDate(schedule)
     return (q: Date) => q.getFullYear() === year &&
             q.getMonth() === month &&
@@ -57,7 +57,7 @@ export function makeCalenderSource(props: CalenderSourceProps) {
 
 function parseDate(schedule: string) {
     // Matches the "YYYY/MM/DD" pattern
-    const match = schedule.match(/(\d+)\/(\d+)\/(\d+)/)
+    const match = schedule.match(/(\d+)\/(\d+)\/(\d+)/)!
     const year = Number(match[1])
     const month = Number(match[2]) - 1
     const date = Number(match[3])
@@ -66,7 +66,7 @@ function parseDate(schedule: string) {
 
 function parseHours(schedule: string) {
     // Matches the "HH:MM-HH:MM" pattern
-    const match = schedule.match(/(\d+:?\d{2})-(\d+:?\d{2})/)
+    const match = schedule.match(/(\d+:?\d{2})-(\d+:?\d{2})/)!
     const start = parseHour(match[1])
     const end = parseHour(match[2])
     return { start, end }

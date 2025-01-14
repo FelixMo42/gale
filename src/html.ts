@@ -7,20 +7,18 @@ type HTMLBuilder = ((...c: Children) => HTMLElement) & {
     withId: (id: string) => HTMLBuilder
     withAttr: (name: string, value: string | boolean | number) => HTMLBuilder
     withClass: (...classes: string[]) => HTMLBuilder
-    withStyle: (style: { [key: string]: string | number }) => HTMLBuilder
+    style: (style: { [key: string]: string | number }) => HTMLBuilder
     on: (event: string, cb: (e: KeyboardEvent | MouseEvent | InputEvent) => void) => HTMLBuilder
 }
 
 export const _ : { [key: string]: HTMLBuilder } = new Proxy({}, {
-    get(na, tag: string): HTMLBuilder {
+    get(_target, tag: string): HTMLBuilder {
         const el = document.createElement(tag)
         
         const builder = (...children: Children) => {
             el.replaceChildren(...children.map((child) => {
                 if (typeof child === "number") {
-                    return _.span(String(child))
-                } else if (typeof child === "string" && tag !== "span") {
-                    return _.span(child)
+                    return String(child)
                 } else {
                     return child
                 }
@@ -55,7 +53,7 @@ export const _ : { [key: string]: HTMLBuilder } = new Proxy({}, {
             return builder
         }
 
-        builder.withStyle = (style: { [key: string]: string | number }) => {
+        builder.style = (style: { [key: string]: string | number }) => {
             for (const [key, val] of Object.entries(style)) {
                 el.style.setProperty(key,
                     typeof val === "number" ? `${val}px`

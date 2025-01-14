@@ -3,6 +3,7 @@
     "files.exclude": {
         "node_modules": true,
         "package-lock.json": true,
+        ".vscode": true,
     },
     "editor.rulers": [
         100

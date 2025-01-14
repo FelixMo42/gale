@@ -10,7 +10,40 @@ interface CalenderEvent {
 }
 
 export function queryCalender(date: Date=new Date()) {
-    return MY_CALENDER.flatMap(source => source(date))
+    const events = MY_CALENDER.flatMap(source => source(date))
+    const withoutOverlaps: CalenderEvent[] = []
+
+    function overlaps(a: CalenderEvent, b: CalenderEvent) {
+        return (b.start >= a.start && b.start < a.end) ||
+            (a.start > b.start && a.start < b.end)
+    }
+
+    for (const event of events) {
+        if (!withoutOverlaps.some(e => overlaps(event, e))) {
+            withoutOverlaps.push(event)
+        }
+    }
+
+    withoutOverlaps.sort((a, b) => a.start - b.start)
+
+    const emptyBlocks: CalenderEvent[] = []
+
+    for (let i = 0; i < withoutOverlaps.length - 1; i++) {
+        const diff = withoutOverlaps[i+1].start - withoutOverlaps[i].end
+        if (withoutOverlaps[i].end !== withoutOverlaps[i+1].start) {
+            emptyBlocks.push({
+                name: diff < 1 ? "" : "Empty",
+                start: withoutOverlaps[i].end,
+                end: withoutOverlaps[i+1].start,
+                background: "#4C4E52",
+            })
+        }
+    }
+
+    return [
+        ...withoutOverlaps,
+        ...emptyBlocks
+    ].sort((a, b) => a.start - b.start)
 }
 
 export function getCurrentCalenderTask(): CalenderEvent[] {
@@ -40,8 +73,6 @@ const LIBRARY_CALENDER = [
 ]
 
 const MY_CALENDER: Array<(date: Date) => CalenderEvent[]> = [
-    ...XR_CALENDER,
-    ...LIBRARY_CALENDER,
 
     // Work
     makeCalenderSource({
@@ -70,12 +101,16 @@ const MY_CALENDER: Array<(date: Date) => CalenderEvent[]> = [
     makeCalenderSource({
         name: "",
         schedule: "everyday 23:00-24:00",
-        background: "https://www.naturalbedcompany.co.uk/wp-content/uploads/Bloomsbury-modern-upholstered-bed-side-view-scaled.jpg",
+        background: `url("img/bed.png")`,
     }),
     makeCalenderSource({
         name: "Go Thrift Shopping",
         schedule: "2025/1/14 9:00-12:00"
-    })
+    }),
+
+    // Import other calenders
+    ...XR_CALENDER,
+    ...LIBRARY_CALENDER,
 ]
 
 export default function CalenderView() {
@@ -104,13 +139,13 @@ function dayView(date: Date) {
 
     return _.div.withClass("day")(
         date.getDate(),
-        _.div.withStyle({
+        _.div.style({
             height: (25 - skipHours) * pxPerHour,
             padding: "0px 2px",
         })(...events.sort((a, b) => a.start - b.end).map(event => 
             _.div
                 .withClass("calevent")
-                .withStyle({
+                .style({
                     height: (event.end - event.start) * pxPerHour,
                     top: (event.start - skipHours) * pxPerHour,
                     ...bg(event.background)
@@ -126,6 +161,10 @@ function bg(background: string) {
     } else if (background.includes("http")) {
         return {
             "background-image": `url(${background})`
+        }
+    } else if (background.includes("url")) {
+        return {
+            "background-image": `${background}`
         }
     } else {
         return {

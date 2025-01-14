@@ -1,4 +1,4 @@
-// src/dates.ts
+// client/dates.ts
 var DaysOfTheWeek = [
   "Sunday",
   "Monday",
@@ -15,7 +15,7 @@ function makeRepeatCalenderSource({ name, schedule }) {
   const daysOfTheWeek = DaysOfTheWeek.map((day, id) => schedule.toUpperCase().includes(day.toUpperCase()) ? id : -1);
   return (q) => daysOfTheWeek.includes(q.getDay());
 }
-function makeSingleDayCalenderSource({ name, schedule }) {
+function makeSingleDayCalenderSource({ schedule }) {
   const { year, month, date } = parseDate(schedule);
   return (q) => q.getFullYear() === year && q.getMonth() === month && q.getDate() == date;
 }
@@ -61,16 +61,14 @@ function parseHour(hour) {
   return hours + minutes / 60;
 }
 
-// src/html.ts
+// client/html.ts
 var _ = new Proxy({}, {
-  get(na, tag) {
+  get(_target, tag) {
     const el = document.createElement(tag);
     const builder = (...children) => {
       el.replaceChildren(...children.map((child) => {
         if (typeof child === "number") {
-          return _.span(String(child));
-        } else if (typeof child === "string" && tag !== "span") {
-          return _.span(child);
+          return String(child);
         } else {
           return child;
         }
@@ -96,7 +94,7 @@ var _ = new Proxy({}, {
       el.classList.add(...classes);
       return builder;
     };
-    builder.withStyle = (style) => {
+    builder.style = (style) => {
       for (const [key, val] of Object.entries(style)) {
         el.style.setProperty(
           key,
@@ -122,9 +120,35 @@ function row(...children) {
   return _.div.withClass("row")(...children);
 }
 
-// src/els/calender.ts
+// client/els/calender.ts
 function queryCalender(date = /* @__PURE__ */ new Date()) {
-  return MY_CALENDER.flatMap((source) => source(date));
+  const events = MY_CALENDER.flatMap((source) => source(date));
+  const withoutOverlaps = [];
+  function overlaps(a, b) {
+    return b.start >= a.start && b.start < a.end || a.start > b.start && a.start < b.end;
+  }
+  for (const event of events) {
+    if (!withoutOverlaps.some((e) => overlaps(event, e))) {
+      withoutOverlaps.push(event);
+    }
+  }
+  withoutOverlaps.sort((a, b) => a.start - b.start);
+  const emptyBlocks = [];
+  for (let i = 0; i < withoutOverlaps.length - 1; i++) {
+    const diff = withoutOverlaps[i + 1].start - withoutOverlaps[i].end;
+    if (withoutOverlaps[i].end !== withoutOverlaps[i + 1].start) {
+      emptyBlocks.push({
+        name: diff < 1 ? "" : "Empty",
+        start: withoutOverlaps[i].end,
+        end: withoutOverlaps[i + 1].start,
+        background: "#4C4E52"
+      });
+    }
+  }
+  return [
+    ...withoutOverlaps,
+    ...emptyBlocks
+  ].sort((a, b) => a.start - b.start);
 }
 function getCurrentCalenderTask() {
   const now = (/* @__PURE__ */ new Date()).getHours();
@@ -150,8 +174,6 @@ var LIBRARY_CALENDER = [
   })
 ];
 var MY_CALENDER = [
-  ...XR_CALENDER,
-  ...LIBRARY_CALENDER,
   // Work
   makeCalenderSource({
     name: "EA Meetup",
@@ -177,12 +199,15 @@ var MY_CALENDER = [
   makeCalenderSource({
     name: "",
     schedule: "everyday 23:00-24:00",
-    background: "https://www.naturalbedcompany.co.uk/wp-content/uploads/Bloomsbury-modern-upholstered-bed-side-view-scaled.jpg"
+    background: `url("img/bed.png")`
   }),
   makeCalenderSource({
     name: "Go Thrift Shopping",
     schedule: "2025/1/14 9:00-12:00"
-  })
+  }),
+  // Import other calenders
+  ...XR_CALENDER,
+  ...LIBRARY_CALENDER
 ];
 function CalenderView() {
   return col(
@@ -207,11 +232,11 @@ function dayView(date) {
   const pxPerHour = 550 / (24 - skipHours);
   return _.div.withClass("day")(
     date.getDate(),
-    _.div.withStyle({
+    _.div.style({
       height: (25 - skipHours) * pxPerHour,
       padding: "0px 2px"
     })(...events.sort((a, b) => a.start - b.end).map(
-      (event) => _.div.withClass("calevent").withStyle({
+      (event) => _.div.withClass("calevent").style({
         height: (event.end - event.start) * pxPerHour,
         top: (event.start - skipHours) * pxPerHour,
         ...bg(event.background)
@@ -225,6 +250,10 @@ function bg(background) {
   } else if (background.includes("http")) {
     return {
       "background-image": `url(${background})`
+    };
+  } else if (background.includes("url")) {
+    return {
+      "background-image": `${background}`
     };
   } else {
     return {
@@ -245,7 +274,7 @@ function getDatesForWeek(week = 0) {
   return dates;
 }
 
-// src/main.ts
+// client/main.ts
 function NowView() {
   const calenderEvent = getCurrentCalenderTask();
   return box(
@@ -272,6 +301,43 @@ function main() {
     _.h1("My Second Brain"),
     _.br(),
     NowView(),
+    _.br(),
+    row(
+      _.div.withClass("box", "red").style({ flex: 2 })(
+        _.label("To Do"),
+        _.div.style({ height: 300, overflow: "scroll" })(
+          pad("Grocery Shopping \u{1F374}"),
+          pad("Clean my room \u{1F3E0}"),
+          pad("Do Laundry \u{1F392}"),
+          pad("Camping Solution \u{1F392}"),
+          pad("Global Charging Solution \u{1F392}"),
+          pad("Fix my Pants \u{1F392}"),
+          pad("Get a Keffiyeh \u{1F392}"),
+          pad("Get a folder for papers \u{1F392}"),
+          pad("Univenting the Gun \u270D\u{1F3FB}"),
+          pad("Life Design \u270D\u{1F3FB}"),
+          pad("Visit Temp Agency \u{1F454}"),
+          pad("Verify on LinkedIn \u{1F454} #short"),
+          pad("Edit Resume \u{1F454}"),
+          pad("Reply to Miles \u{1F465} #short"),
+          pad("Reply to Papa \u{1F465} #short"),
+          pad("Make Tacocat Album \u{1F465}"),
+          pad("Work on Gale \u2699\uFE0F")
+        )
+      ),
+      _.div.withClass("col").style({ flex: 1 })(
+        _.div.withClass("box", "blue")(
+          _.label("Today (3/3)"),
+          pad("New Pants \u{1F392}"),
+          pad("SSN Paperwork \u{1F454}"),
+          pad("Reply to Julie \u{1F465}")
+        ),
+        _.div.withClass("box", "green", "flex")(
+          _.label("Done"),
+          _.br()
+        )
+      )
+    ),
     _.br(),
     CalenderView()
   );
