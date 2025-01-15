@@ -6,7 +6,7 @@ type HTMLBuilder = ((...c: Children) => HTMLElement) & {
     with: (t: (e: HTMLElement) => void) => HTMLBuilder
     withId: (id: string) => HTMLBuilder
     withAttr: (name: string, value: string | boolean | number) => HTMLBuilder
-    withClass: (...classes: string[]) => HTMLBuilder
+    c: (...classes: string[]) => HTMLBuilder
     style: (style: { [key: string]: string | number }) => HTMLBuilder
     on: (event: string, cb: (e: KeyboardEvent | MouseEvent | InputEvent) => void) => HTMLBuilder
 }
@@ -48,7 +48,7 @@ export const _ : { [key: string]: HTMLBuilder } = new Proxy({}, {
             return builder
         }
 
-        builder.withClass = (...classes: string[]) => {
+        builder.c = (...classes: string[]) => {
             el.classList.add(...classes)
             return builder
         }
@@ -74,13 +74,25 @@ export const _ : { [key: string]: HTMLBuilder } = new Proxy({}, {
 })
 
 export function flex(...children: Children) {
-    return _.div.withClass("flex")(...children)
+    return _.div.c("flex")(...children)
 }
 
 export function col(...children: Children) {
-    return _.div.withClass("col")(...children)
+    return _.div.c("col")(...children)
 }
 
 export function row(...children: Children) {
-    return _.div.withClass("row")(...children)
+    return _.div.c("row")(...children)
+}
+
+export function button(label: string, click: (e: MouseEvent) => void) {
+    return _.button.on("click", click)(label)
+}
+
+export function pad(...children: Children) {
+    return _.div.c("pad")(...children)
+}
+
+export function box(...children: Children) {
+    return _.div.c("box")(...children)
 }

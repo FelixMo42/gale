@@ -16,6 +16,17 @@ body {
 
 /* calender */
 
+.drag > div {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    user-select: none;
+    position: absolute;
+}
+
+.draggable div {
+    user-select: none;
+}
+
 .day {
     display: flex;
     flex-direction: column;
@@ -31,6 +42,28 @@ body {
     display: block;
     padding: 0px 5px;
     padding-bottom: 50px;
+}
+
+.press {
+    cursor: pointer;
+}
+
+p {
+    margin: 0px;
+    min-height: 25px;
+}
+
+.stack {
+    display: flex;
+    justify-content: center;
+    padding: 0px 10px;
+    width: 100vw;
+    gap: 10px;
+}
+
+.document {
+    width: 800px;
+    min-width: 100px;
 }
 
 .calevent {
@@ -91,10 +124,6 @@ h1 {
     border-top-right-radius: 5px;
 }
 
-.row:has(> .box) {
-    gap: 5px;
-}
-
 .col:has(> .box) {
     gap: 5px;
 }
@@ -115,6 +144,7 @@ h1 {
 .row {
     display: flex;
     flex-direction: row;
+    gap: 5px;
 }
 
 .flex {
@@ -147,23 +177,12 @@ button:hover {
     cursor: pointer;
 }
 
-#main {
-    width: 800px;
-    padding: 10px;
-    margin: auto;
-}
-
 #root {
     display: flex;
     flex-direction: row;
 
     /* for full screen mode */
     background-color: inherit;
-}
-
-main {
-    min-height: 100vh;
-    width: 800px;
 }
 
 #root>aside {
