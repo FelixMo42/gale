@@ -83,9 +83,9 @@ function dyn(data, view) {
 }
 
 // src/core/navigation.ts
-var nav = ["My_Second_Brain.md", "SSN_Paperwork.md"];
+var nav = ["My_Second_Brain.md", "Get_A_Job.md"];
 function goTo(page) {
-  nav.push(page);
+  nav[1] = page;
   update();
 }
 
@@ -137,6 +137,7 @@ function TaskView(todos) {
 }
 
 // src/main.ts
+var cache = /* @__PURE__ */ new Map();
 function Router() {
   return dyn(() => nav, () => _.div.c("stack")(...nav.map(Document)));
 }
@@ -145,7 +146,17 @@ function parseDocument(path, text) {
   const blocks = [];
   const lines = text.split("\n");
   for (let i = 0; i < lines.length; i++) {
-    if (lines[i].startsWith("```")) {
+    if (lines[i].startsWith("- [")) {
+      blocks.push({
+        kind: "checkbox",
+        text: lines[i].substring(6)
+      });
+    } else if (lines[i].trim().startsWith("-")) {
+      blocks.push({
+        kind: "list",
+        text: lines[i].trim().substring(2)
+      });
+    } else if (lines[i].startsWith("```")) {
       const end = getNextLine(i);
       const data = JSON.parse(lines.slice(i + 1, end).join("\n"));
       blocks.push({
@@ -170,8 +181,11 @@ function parseDocument(path, text) {
   return { title, blocks };
 }
 function Document(path) {
+  if (cache.has(path)) {
+    return _.div.c("document")(DocumentView(cache.get(path)));
+  }
   const container = _.div.c("document")();
-  fetch(path).then((file) => file.text()).then((text) => DocumentView(parseDocument(path, text))).then((view) => container.replaceChildren(view));
+  fetch(path).then((file) => file.text()).then((text) => parseDocument(path, text)).then((data) => cache.set(path, data).get(path)).then((data) => DocumentView(data)).then((view) => container.replaceChildren(view));
   return container;
 }
 function DocumentView(document2) {
@@ -179,12 +193,29 @@ function DocumentView(document2) {
     _.h1(document2.title),
     ...document2.blocks.map((block) => {
       if (block.kind === "text") {
-        return _.p(block.text);
+        return _.p(buildText(block.text));
+      } else if (block.kind === "list") {
+        return _.ul(_.li(buildText(block.text)));
       } else if (block.kind === "todo") {
         return TaskView(block.todos);
+      } else if (block.kind === "checkbox") {
+        return _.div.c("line")(
+          _.input.withAttr("type", "checkbox")(
+            _.div()
+          ),
+          _.label(buildText(block.text))
+        );
       }
     })
   );
+}
+function buildText(text) {
+  if (text.startsWith("[")) {
+    const matches = text.match(/\[(.*)\]\((.*)\)/);
+    return _.a.withAttr("href", matches[2])(matches[1]);
+  } else {
+    return text;
+  }
 }
 async function main() {
   document.getElementById("main").replaceChildren(Router());

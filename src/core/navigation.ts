@@ -1,9 +1,9 @@
 import { _ } from "./html"
 import { update } from "./update"
 
-export const nav = ["My_Second_Brain.md", "SSN_Paperwork.md"]
+export const nav = ["My_Second_Brain.md", "Get_A_Job.md"]
 
 export function goTo(page: string) {
-    nav.push(page)
+    nav[1] = page
     update()
 }

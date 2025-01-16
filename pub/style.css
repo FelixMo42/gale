@@ -53,6 +53,49 @@ p {
     min-height: 25px;
 }
 
+a {
+    color: teal;
+}
+
+ul {
+    margin: 0px;
+}
+
+input[type=checkbox] {
+    margin: 0px;
+    margin-right: 10px;
+    background: none;
+}
+
+input[type=checkbox] {
+    margin-right: 5px;
+    appearance: none;
+    border: 1px solid gray;
+    border-radius: 100%;
+    width: 15px;
+    height: 15px;
+    user-select: none;
+}
+
+input[type=checkbox]:checked {
+    appearance: none;
+    border: #1f6f04;
+    background-color: #1f6f04;
+    border-radius: 100%;
+}
+
+input[type=checkbox]:checked > div {
+    border-right: 2px solid #1f1f1f;
+    border-bottom: 2px solid #1f1f1f;
+    width: 5px;
+    height: 9px;
+    z-index: 10;
+    position: relative;
+    top: 2px;
+    left: 5px;
+    rotate: 45deg;
+}
+
 .stack {
     display: flex;
     justify-content: center;
