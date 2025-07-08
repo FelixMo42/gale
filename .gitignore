@@ -1,9 +1,0 @@
-# build files
-./pub/index.js
-
-# date files
-.cache/
-
-# node nonsense
-package-lock.json
-node_modules

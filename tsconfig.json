@@ -1,6 +1,0 @@
-{
-    "compilerOptions": {
-        "jsx": "preserve",
-        "lib": ["DOM", "ES2022"]
-    }
-}
