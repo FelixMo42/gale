@@ -2,7 +2,14 @@ import { readFile, writeFile, open } from "node:fs/promises"
 import { Server } from "node:http"
 import { join } from "node:path"
 
-const root = "../journal"
+const port = 8043
+
+const search_paths = [
+    "",
+    ".",
+    "../journal",
+    "../gale"
+]
 
 async function exists(path: string): Promise<boolean> {
     try {
@@ -14,23 +21,29 @@ async function exists(path: string): Promise<boolean> {
 }
 
 async function get(path: string): Promise<string> {
-    if (await exists(join(".", path))) {
-        return await readFile(join(".", path))
-    } else if (await exists(join(root, path))) {
-        return await readFile(join(root, path))
-    } else if (await exists(join(root, `${path}.md`))) {
-        return await readFile(join(".", "editor.html"), "utf-8").then(f => f
-            .replaceAll("{ title }", "title")
-            .replaceAll("{ path }", `${path}.md`)
-        )
-    } else {
-        throw new Error(`Can't find ${path}!`, { cause: 404 })
+    for (const root of search_paths) {
+        if (await exists(join(root, path))) {
+            return await readFile(join(root, path))
+        }
+
+        if (await exists(join(root, `${path}.md`))) {
+            return await readFile(join(".", "editor.html"), "utf-8").then(f => f
+                .replaceAll("{ title }", "title")
+                .replaceAll("{ path }", `${path}.md`)
+            )
+        }    
     }
+
+    throw new Error(`Can't find ${path}!`, { cause: 404 })
 }
 
 async function post(path: string, text: string) {
-    await writeFile(join(root, path), text)
-    console.log("SET", path)
+    for (const root of search_paths) {
+        if (await exists(join(root, path))) {
+            console.log("SET", join(root, path))
+            return await writeFile(join(root, path), text)
+        }
+    }
 }
 
 function server() {
@@ -72,7 +85,7 @@ function server() {
         })
     })
 
-    server.listen("8042")
+    server.listen(port)
 }
 
 function main() {
