@@ -1,8 +1,31 @@
 window.onload = () => {
     document
-        .querySelectorAll("section.editor[href]")
+        .querySelectorAll("a")
+        .forEach((link) => {
+            const linkPath = new URL(link.href, window.location.origin).pathname
+            const currentPath = window.location.pathname
+
+            if (linkPath === currentPath) {
+                link.classList.add('active')
+            }
+        })
+
+    document
+        .querySelectorAll("article.editor[href]")
         .forEach(attach_editor)
 }
+
+document.addEventListener('keydown', function(event) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'p') {
+        event.preventDefault()
+        
+        alert('hi')
+    }
+
+    if (event.key === "Escape") {
+        event.preventDefault()
+    }
+})
 
 function attach_editor(editor) {
     const path = editor.getAttribute("href")
@@ -11,6 +34,14 @@ function attach_editor(editor) {
     fetch(path, { cache: "no-cache" })
         .then(response => response.status == 200 ? response.text() : "")
         .then(text => editor.innerHTML = md_to_html(text))
+        .then(() => {
+            editor
+                .querySelectorAll(".indent")
+                .forEach((element) => {
+                    element.parentElement.style.paddingLeft = `${element.scrollWidth}px`
+                    element.parentElement.style.textIndent = `-${element.scrollWidth}px`
+                })
+        }) 
 
     // Save on edit 
     editor.oninput = () => {
@@ -26,6 +57,13 @@ function update_editor(editor) {
             line.className = get_line_class(line.innerText)
         }
     })
+
+    editor
+        .querySelectorAll("indent")
+        .forEach((element) => {
+            element.parent.style.paddingLeft = element.width
+        })
+
 }
 
 function get_line_class(line) {
@@ -42,14 +80,32 @@ function md_to_html(md) {
 
     function $(line) {
         return match_replace(line, [
-            [/\*\*[^\*]*\*\*/g, g => `<b>${g}</b>`],
-
             [/\*[^\*]*\*/g, g => `<i>${g}</i>`],
             [/\_[^\_]*\_/g, g => `<i>${g}</i>`],
+
+            [/\*\*[^\*]*\*\*/g, g => `<b>${g}</b>`],
+            [/\_\_[^\_]*\_\_/g, g => `<b>${g}</b>`],
             
             [/\~\~.*\~\~/g, g => `<span class="strike">${g}</span>`],
+
+            [/^\s*\√\s+/g, g => `<span class="task indent">${g}</span>`],
+            [/^\s*\_\s+/g, g => `<span class="task indent">${g}</span>`],
+
+            [/^\s*\-\s+/g, g => `<span class="indent">${g}</span>`],
+            [/^\s*\*\s+/g, g => `<span class="indent">${g}</span>`],
+            [/^\s*\>\s+/g, g => `<span class="indent">${g}</span>`],
+
+            [/\[\[[^\]]+\]\]/g, g => `<a onclick="document.location='${format_link(g)}'">${g}</a>`],
         ])
     }
+}
+
+function format_link(name) {
+    return name
+        .replaceAll("[[", "")
+        .replaceAll("]]", "")
+        .replaceAll(" ", "_")
+        .toLowerCase()
 }
 
 function html_to_md(html) {
