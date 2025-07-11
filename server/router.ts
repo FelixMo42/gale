@@ -21,7 +21,7 @@ export function router(layers: Array<(r: Request) => Promise<ResponseBuilder | u
         // respond to the request
         req.on("end", async () => {
             const response_builder = await handle_response({
-                url: req.url!,
+                url: decodeURIComponent(req.url!),
                 method: req.method!,
                 body,
             })

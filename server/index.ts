@@ -2,7 +2,7 @@ import { opendir, readFile, writeFile } from "node:fs/promises"
 import { join, extname } from "node:path"
 
 import { RedirectResponse, Request, ResponseBuilder, router } from "./router.ts"
-import { exists } from "./utils.ts"
+import { exists, fuzzy, get_all_notes } from "./utils.ts"
 import { _, PageResponse } from "./html.ts"
 
 import { config } from "../config.ts"
@@ -10,6 +10,7 @@ import { calendar } from "./calendar.ts"
 
 function main() {
     router([
+        api,
         calendar,
         notes,
         file_server(config.notes_dir),
@@ -18,6 +19,28 @@ function main() {
 }
 
 main()
+
+async function api(req: Request) {
+    if (req.url.startsWith("/api/search")) {
+        const [_path, query] = req.url.split("?q=")
+
+        const notes = await get_all_notes()
+
+        const html = notes
+            .map(note => note.replaceAll("_", " "))
+            .filter(note => fuzzy(query, note))
+            .map(note => {
+                const parts = note
+                    .split("/")
+                    .map(p => `<span>${p}</span>`)
+
+                return `<a href="/${note.replaceAll(" ", "_")}">${parts.join("")}</a>`
+            })
+            .join("")
+
+        return ResponseBuilder(200, { "content-type": "text/html" }, html)
+    }
+}
 
 /***************/
 /* FILE SERVER */
@@ -61,6 +84,10 @@ async function notes(req: Request) {
                 _.editor({ href: `${req.url}.md` })
             ]),
             _.aside({}, []),
+            _.popup({}, [
+                _.input({ autofocus: "" }),
+                _.div({ id: "results" })
+            ])
         ])
     }
 

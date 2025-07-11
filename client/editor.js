@@ -1,4 +1,5 @@
 window.onload = () => {
+    // make a's active is the point to the current page
     document
         .querySelectorAll("a")
         .forEach((link) => {
@@ -10,22 +11,43 @@ window.onload = () => {
             }
         })
 
+    // attach editors
     document
         .querySelectorAll("article.editor[href]")
         .forEach(attach_editor)
+
+    // popup
+    const modal = document.querySelector("dialog")
+    const input = document.querySelector("dialog input")
+    input.oninput = () => search(input.value)
+    input.onfocus = () => search(input.value)
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.close()
+    })
+    document.addEventListener('keydown', function (event) {
+        if ((event.ctrlKey || event.metaKey) && event.key === 'p') {
+            event.preventDefault()
+
+            if (!modal.open) {
+                modal.showModal()
+                input.reset()
+            } else {
+                input.focus()
+            }
+        }
+
+        if (event.key === "Escape") {
+            event.preventDefault()
+
+            if (modal.open) modal.close()
+        }
+    })
 }
 
-document.addEventListener('keydown', function(event) {
-    if ((event.ctrlKey || event.metaKey) && event.key === 'p') {
-        event.preventDefault()
-        
-        alert('hi')
-    }
-
-    if (event.key === "Escape") {
-        event.preventDefault()
-    }
-})
+async function search(q="") {
+    const html = await fetch(`/api/search?q=${q}`).then(r => r.text())
+    document.getElementById("results").innerHTML = html
+}
 
 function attach_editor(editor) {
     const path = editor.getAttribute("href")
@@ -41,7 +63,7 @@ function attach_editor(editor) {
                     element.parentElement.style.paddingLeft = `${element.scrollWidth}px`
                     element.parentElement.style.textIndent = `-${element.scrollWidth}px`
                 })
-        }) 
+        })
 
     // Save on edit 
     editor.oninput = () => {
@@ -85,7 +107,7 @@ function md_to_html(md) {
 
             [/\*\*[^\*]*\*\*/g, g => `<b>${g}</b>`],
             [/\_\_[^\_]*\_\_/g, g => `<b>${g}</b>`],
-            
+
             [/\~\~.*\~\~/g, g => `<span class="strike">${g}</span>`],
 
             [/^\s*\√\s+/g, g => `<span class="task indent">${g}</span>`],

@@ -22,9 +22,17 @@ export function calendar(req: Request) {
                 _.editor({ href: `/year/0/week/${Math.floor(day / 7) + 1}.md` }),
                 _.dashboard_widget({}, []),
                 _.status_widget({}, [])
+            ]),
+            _.popup({}, [
+                _.input({ autofocus: "" }),
+                _.div({ id: "results" })
             ])
         ])
     }
+}
+
+_.popup = (_attrs, children) => {
+    return _.dialog({}, children)
 }
 
 _.calendar_widget = (_attrs, _children) => {
