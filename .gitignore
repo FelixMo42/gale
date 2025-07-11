@@ -4,3 +4,6 @@ config.ts
 # vscode
 .vscode
 gale.code-workspace
+
+# misc
+.cache

@@ -51,8 +51,8 @@ export function ResponseBuilder(status_code: number, headers?: OutgoingHttpHeade
     }
 }
 
-export function RedirectResponse(location:  string) {
-    return ResponseBuilder(302, { location })
+export function RedirectResponse(location:  string, status_code=302) {
+    return ResponseBuilder(status_code, { location })
 }
 
 export function ErrorResponse(status_code: number, text: string) {

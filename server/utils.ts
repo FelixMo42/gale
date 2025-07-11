@@ -1,6 +1,8 @@
 
 import { access, readdir } from "node:fs/promises"
-import { config } from "../config.ts";
+import { createHash } from "node:crypto"
+
+import { config } from "../config.ts"
 
 export function range(length: number, start: number = 0) {
     return new Array(length).fill(0).map((_, i) => i + start)
@@ -35,4 +37,8 @@ export async function get_all_notes(dir: string = config.notes_dir): Promise<str
         .filter(file => !file.startsWith("."))
         .filter(file => file.endsWith(".md"))
         .map(file => file.replaceAll(".md", ""))
+}
+
+export function hash(input: string) {
+    return createHash('sha256').update(input).digest('hex')
 }

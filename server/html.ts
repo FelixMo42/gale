@@ -4,7 +4,7 @@ interface PageAttrs {
     title: string,
 }
 
-export function PageResponse({ title }: PageAttrs, children: TagChildren) {
+export async function PageResponse({ title }: PageAttrs, children: TagChildren) {
     return ResponseBuilder(200, { "Content-Type": "text/html" }, `
         <!DOCTYPE html>
         <html>
@@ -18,19 +18,19 @@ export function PageResponse({ title }: PageAttrs, children: TagChildren) {
             <script src="/editor.js"></script>
         </head>
 
-        <body>${children.join("")}</body>
+        <body>${(await Promise.all(children)).join("")}</body>
 
         </html>
     `.replaceAll("    ", ""))
 }
 
-type TagAttrs    = { [key: string]: string | number | boolean }
-type TagChildren = (string | number)[]
-type TagBuilder  = (attrs: TagAttrs, children?: TagChildren) => string
+type TagAttrs    = { [key: string]: object | string | number | boolean }
+type TagChildren = (string | number | Promise<string>)[]
+type TagBuilder  = (attrs: TagAttrs, children?: TagChildren) => Promise<string> | string
 
 export const _ = new Proxy({} as { [key: string]: TagBuilder }, {
     get(tags, tag_name: string) {
-        return (attrs: TagAttrs, children: TagChildren = []) => {
+        return async (attrs: TagAttrs, children: TagChildren = []) => {
             if (tag_name in tags) {
                 return tags[tag_name](attrs, children)
             }
@@ -42,7 +42,9 @@ export const _ = new Proxy({} as { [key: string]: TagBuilder }, {
                     return `${key}=${val}`
                 }
             })].join(" ")
-            return `<${tag}>${children.join("")}</${tag_name}>`
+
+            const innerHtml = await Promise.all(children)
+            return `<${tag}>${innerHtml.join("")}</${tag_name}>`
         }
     },
 

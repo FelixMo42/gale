@@ -55,7 +55,7 @@ aside article {
 aside article label {
     text-align: center;
     display: block;
-    padding: 10px;
+    padding: 5px;
     font-weight: bold;
     background-color: lightgray;
 }
@@ -70,7 +70,7 @@ aside article.editor div.h1:first-child {
     font-weight: bold;
     border: none;
     background-color: lightgrey;
-    padding: 10px;
+    padding: 5px 10px;
     margin: -10px;
     margin-bottom: 10px;
 }
@@ -158,6 +158,33 @@ aside article.editor div.h1:first-child {
 .day.month-11 { background-color: var(--month-11); }
 .day.month-12 { background-color: var(--month-12); }
 
+.event {
+    border-radius: var(--border-radius);
+}
+
+.event.filler {
+    color: rgba(0, 0, 0, 0);
+    margin: 0px 5px;
+    border-radius: 0px;
+    opacity: 20%;
+    z-index: -1;
+}
+
+.event>div {
+    left: 20px;
+    right: 20px;
+    position: absolute;
+    padding: 12px 5px;
+    z-index: 2;
+}
+
+.progress {
+    position: absolute;
+    width: 100%;
+    background-color: rgba(0, 0, 50, 0.1);
+    border-bottom: 2px dashed white;
+}
+
 /* MODAL */
 
 dialog {
@@ -208,7 +235,6 @@ dialog #results a:hover {
 .col {
     display: flex;
     flex-direction: column;
-    overflow-y: scroll;
 }
 
 .row {
@@ -218,4 +244,16 @@ dialog #results a:hover {
 
 .flex {
     flex: 1;
+}
+
+.pad {
+    padding: 10px;
+}
+
+.relative {
+    position: relative;
+}
+
+.scroll {
+    overflow-y: scroll;
 }
