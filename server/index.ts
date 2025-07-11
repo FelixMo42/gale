@@ -25,9 +25,9 @@ main()
 
 function file_server(base: string) {
     return async (req: Request) => {
-        if (!await exists(`${base}${req.url}`)) return
-
         if (req.method === "GET") {
+            if (!await exists(`${base}${req.url}`)) return
+            
             const mime_types: { [key: string]: string } = {
                 ".css"  : "text/css",
                 ".js"   : "text/javascript",
@@ -58,10 +58,9 @@ async function notes(req: Request) {
         return PageResponse({ title: req.url! }, [
             _.aside({}, [ _.calendar_widget({}) ]),
             _.main({}, [
-                _.section({}, [
-                    _.editor({ href: `${req.url}.md` })
-                ])
-            ])
+                _.editor({ href: `${req.url}.md` })
+            ]),
+            _.aside({}, []),
         ])
     }
 

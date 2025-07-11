@@ -95,7 +95,7 @@ function md_to_html(md) {
             [/^\s*\*\s+/g, g => `<span class="indent">${g}</span>`],
             [/^\s*\>\s+/g, g => `<span class="indent">${g}</span>`],
 
-            [/\[\[[^\]]+\]\]/g, g => `<a onclick="document.location='${format_link(g)}'">${g}</a>`],
+            [/\[\[[^\]]+\]\]/g, g => `<a onclick="document.location='/${format_link(g)}'">${g}</a>`],
         ])
     }
 }

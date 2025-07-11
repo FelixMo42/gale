@@ -1,6 +1,21 @@
 :root {
     font-size: 1.3em;
     font-family: Arial, Helvetica, sans-serif;
+
+    --border-radius: 5px;
+
+    --month-1: #FFBBBB;
+    --month-2: #FFDDBB;
+    --month-3: #FFFFBB;
+    --month-4: #DDFFBB;
+    --month-5: #BBFFBB;
+    --month-6: #BBFFDD;
+    --month-7: #BBFFFF;
+    --month-8: #BBDDFF;
+    --month-9: #BBBBFF;
+    --month-10: #DDBBFF;
+    --month-11: #FFBBFF;
+    --month-12: #FFBBDD;
 }
 
 * {
@@ -8,55 +23,53 @@
 }
 
 body {
-    gap: 10px;
     margin: 0px;
-    height: calc(100vh);
-    overflow: hidden;
     display: flex;
     flex-direction: row;
 }
 
-aside:first-child {
-    max-width: 275px;
-    border-right: 1px solid lightgrey;
-    background-color: whitesmoke;
-}
-
 main {
-    flex: 1;
-    overflow-y: scroll;
-    display: flex;
-}
-
-main section {
-    min-width: 800px;
-    max-width: 800px;
+    width: 800px;
+    width: 800px;
 }
 
 aside {
     flex: 1;
-}
-
-main aside {
-    flex: 1;
+    padding: 10px;
     position: sticky;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     top: 0px;
-    padding: 20px;
+    height: 100vh;
 }
 
-main aside article.editor {
-    border: 1px solid lightgrey !important;
-    border-radius: 5px !important;
-    padding: 10px !important;
+aside article {
+    border-radius: var(--border-radius);
+    opacity: 75%;
+    border: 1px solid lightgrey;
+    overflow: hidden;
 }
 
-main aside article div.h1:first-child {
-    all: unset;
+aside article label {
+    text-align: center;
+    display: block;
+    padding: 10px;
+    font-weight: bold;
+    background-color: lightgray;
+}
+
+aside article.editor {
+    padding: 10px;
+}
+
+aside article.editor div.h1:first-child {
+    font-size: inherit;
     display: block;
     font-weight: bold;
     border: none;
     background-color: lightgrey;
-    padding: 5px 10px;
+    padding: 10px;
     margin: -10px;
     margin-bottom: 10px;
 }
@@ -67,8 +80,6 @@ main aside article div.h1:first-child {
     width: 100%;
     max-width: 800px;
     outline: none;
-    border: none;
-    resize: none;
     font-family: inherit;
     font-size: inherit;
     white-space: pre-wrap;
@@ -110,25 +121,6 @@ main aside article div.h1:first-child {
 
 /* CALENDAR */
 
-.calendar {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.calendar>label {
-    text-align: center;
-    display: block;
-    background-color: lightgray;
-    padding: 10px;
-    opacity: 75%;
-}
-
-.week {
-    display: flex;
-    flex-direction: row;
-}
-
 .day {
     color: inherit;
     text-decoration: none;
@@ -137,35 +129,33 @@ main aside article div.h1:first-child {
     aspect-ratio: 1/1;
     text-align: center;
     cursor: pointer;
-    opacity: 75%;
 }
 
 .day.is_past {
-    opacity: 25%;
+    color: rgba(0, 0, 0, 0.75);
+    font-style: italic;
 }
 
 .day.is_today {
     text-decoration: underline;
-    font-weight: bold;
 }
 
 .day.active {
-    opacity: 100%;
+    font-weight: bold;
 }
 
-/* DAY MARKERS */
-
-.e42 {
-    background-color: rgba(163, 163, 163, 0.5);
-}
-
-.conflan {
-    background-color: lightblue;
-}
-
-.hike {
-    background-color: rgb(246, 168, 168);
-}
+.day.month-1 { background-color: var(--month-1); }
+.day.month-2 { background-color: var(--month-2); }
+.day.month-3 { background-color: var(--month-3); }
+.day.month-4 { background-color: var(--month-4); }
+.day.month-5 { background-color: var(--month-5); }
+.day.month-6 { background-color: var(--month-6); }
+.day.month-7 { background-color: var(--month-7); }
+.day.month-8 { background-color: var(--month-8); }
+.day.month-9 { background-color: var(--month-9); }
+.day.month-10 { background-color: var(--month-10); }
+.day.month-11 { background-color: var(--month-11); }
+.day.month-12 { background-color: var(--month-12); }
 
 /* COMMON */
 

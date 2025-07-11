@@ -11,24 +11,27 @@ export function calendar(req: Request) {
         const title = format_date_title(new Date(req.url.slice(1)))
 
         return PageResponse({ title }, [
-            _.aside({}, [ _.calendar_widget({}) ]),
+            _.aside({}, [
+                _.calendar_widget({}),
+                _.today_widget({})
+            ]),
             _.main({}, [
-                _.section({}, [
-                    _.editor({ href: `/year/0/diary/${day}.md` })
-                ]),
-                _.aside({}, [
-                    _.editor({ href: `/year/0/week/${Math.floor(day / 7) + 1}.md` })
-                ])
+               _.editor({ href: `/year/0/diary/${day}.md` })
+            ]),
+            _.aside({}, [
+                _.editor({ href: `/year/0/week/${Math.floor(day / 7) + 1}.md` }),
+                _.dashboard_widget({}, []),
+                _.status_widget({}, [])
             ])
         ])
     }
 }
 
 _.calendar_widget = (_attrs, _children) => {
-    return _.section({ class: "calendar" }, [
+    return _.article({}, [
         _.label({}, [config.name]),
         ...range(12).map(week =>
-            _.div({ class: "week" }, [
+            _.div({ class: "row" }, [
                 ...range(7, week * 7).map(day => {
                     const date = addDays(config.start, day)
                     return _.a({
@@ -41,7 +44,27 @@ _.calendar_widget = (_attrs, _children) => {
     ])
 }
 
-function format_date_title(date: Date): string {
+_.today_widget = (_attrs, _children) => {
+    return _.article({ class: "flex" }, [
+        _.label({}, [`Today: ${format_date_title()}`]),
+        _.div({}, [])
+    ])
+}
+
+_.dashboard_widget = (_attrs, _children) => {
+    return _.article({ class: "flex" }, [
+        _.label({}, [`Tasks`]),
+        _.div({}, [])
+    ])
+}
+
+_.status_widget = (_attrs, _children) => {
+    return _.article({ }, [
+        _.label({}, [``]),
+    ])
+}
+
+function format_date_title(date: Date=new Date()): string {
     const month = date.toLocaleString('en-US', { month: 'long' })
     const day = date.getDate()
     const suffix = get_day_suffix(day)
@@ -76,18 +99,12 @@ function addDays(date: Date, days: number): MyDate {
 }
 
 const calendar_class = (date: Date) => {
-    let base = ""
+    let base = `month-${date.getMonth()}`
 
-    if (isToday(date)) base += "is_today "
-    if (isPast(date)) base += "is_past "
+    if (isToday(date)) base += " is_today"
+    if (isPast(date)) base += " is_past"
 
-    if (date.getMonth() == 7) {
-        return base + `e42`
-    } else if (date.getMonth() < 7) {
-        return base + `conflan`
-    } else {
-        return base + `hike`
-    }
+    return base
 }
 
 function isToday(date: Date) {
