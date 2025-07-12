@@ -29,8 +29,8 @@ window.onload = () => {
             event.preventDefault()
 
             if (!modal.open) {
+                input.value = ""
                 modal.showModal()
-                input.reset()
             } else {
                 input.focus()
             }

@@ -175,7 +175,7 @@ aside article.editor div.h1:first-child {
 
     right: 0px;
     top: 0px;
-    bottom: 0px;
+    bottom: -2px;
     left: 33px;
 
     display: flex;
@@ -191,6 +191,8 @@ aside article.editor div.h1:first-child {
     min-height: 0px;
     padding-left: 5px;
     overflow: visible;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
 }
 
 .agenda-time {

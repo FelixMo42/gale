@@ -29,7 +29,7 @@ function style_agenda(agenda) {
             mode = "yellow"
         } else if (["lunch", "dinner"].includes(line)) {
             mode = "green"
-        } else if (line === "boat") {
+        } else if (line.includes("boat")) {
             mode = "rgb(70, 130, 180)"
         } else if (line.startsWith("work")) {
             mode = "grey"

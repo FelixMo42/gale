@@ -37,6 +37,7 @@ export async function get_all_notes(dir: string = config.notes_dir): Promise<str
         .filter(file => !file.startsWith("."))
         .filter(file => file.endsWith(".md"))
         .map(file => file.replaceAll(".md", ""))
+        .sort()
 }
 
 export function hash(input: string) {

@@ -52,7 +52,10 @@ _.calendar_widget = (_attrs, _children) => {
 
 _.status_widget = (_attrs, _children) => {
     return _.article({ }, [
-        _.label({}, [`Currently doing nothing!`]),
+        _.label({
+            onclick: "alert('Do five jumping jacks!')",
+            style: "cursor: pointer;"
+        }, [`Help, I'm stuck!`]),
     ])
 }
 
