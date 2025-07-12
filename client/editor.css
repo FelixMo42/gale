@@ -170,6 +170,29 @@ aside article.editor div.h1:first-child {
     text-wrap: nowrap;
 }
 
+.agenda {
+    position: absolute;
+
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    left: 33px;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    outline: none;
+}
+
+.agenda div {
+    flex: 1;
+    min-height: 0px;
+    padding-left: 5px;
+    overflow: visible;
+}
+
 .agenda-time {
     width: 33px;
     padding-right: 3px;
@@ -188,7 +211,8 @@ aside article.editor div.h1:first-child {
     left: 0px;
     z-index: 10;
     border-bottom: 2px solid black;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 50, 0.1);
+    pointer-events: none;
 }
 
 /* MODAL */

@@ -1,6 +1,8 @@
+import { readFile } from "node:fs/promises"
+
 import { gfetch } from "./gauth.ts"
 import { _ } from "./html.ts"
-import { range } from "./utils.ts"
+import { exists, range } from "./utils.ts"
 
 import { config } from "../config.ts"
 
@@ -68,15 +70,15 @@ function get_date_range(now = new Date()) {
 _.events_widget = async (attrs, _children) => {
     const date = (attrs.date as Date) ?? new Date()
 
-    const events = await get_todays_events(date)
+    const agenda = await get_agenda(date)
 
-    const start = events[0].start!
-    const end = events[events.length - 1].end!
-
-    const start_h = start.getHours()
+    const start_h = 8
     const end_h   = 24
 
-    // const progress = (new Date().getTime() - start.getTime()) / (end.getTime() - start.getTime())
+    const progress = (
+        (new Date().getTime() - at("8:00").getTime()) /
+        (at("24:00").getTime() - at("8:00").getTime())
+    ) * 100
 
     return _.article({ class: "flex col" }, [
         _.label({}, [`Agenda for ${format_date_title(date, false)}`]),
@@ -84,19 +86,18 @@ _.events_widget = async (attrs, _children) => {
             ...is_today(date) ? [
                 _.div({
                     class: "agenda-fill",
-                    style: `bottom: ${100 - calc_p(new Date())}%`
+                    style: `bottom: ${100 - progress}%`
                 })
             ] : [],
-            ...events.map(event =>
-                _.div({
-                    class: "event",
-                    style: [
-                        `top: ${calc_p(event.start!)}%`,
-                        `bottom: ${100 - calc_p(event.end!)}%`,
-                        `background-color: ${event.color ?? 'pink'}`,
-                    ].join(";"),
-                }, [ event.name ])
-            ),
+            _.div({
+                class: "agenda",
+                contenteditable: "true",
+                href: `.hidden/agenda/${format_date_file(date)}.md`,
+            }, [
+                ...agenda.split("\n").map(line =>
+                    _.div({}, [ line || "<br>" ])
+                )
+            ]),
             ...range(end_h - start_h, start_h).map(hour =>
                 _.div({ class: "flex row agenda-row" }, [
                     _.div({ class: "agenda-time" }, [ `${hour}` ])
@@ -104,12 +105,32 @@ _.events_widget = async (attrs, _children) => {
             ),
         ])
     ])
-
-    function calc_p(date: Date) {
-        return (date.getTime() - start.getTime()) / (end.getTime() - start.getTime()) * 100
-    } 
 }
 
+function format_date_file(date: Date) {
+    return `${date.getFullYear()}-${String(date.getMonth()).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+}
+
+async function get_agenda(date=new Date()): Promise<string> {
+    if (await exists(`${config.notes_dir}/.hidden/agenda/${format_date_file(date)}.md`)) {
+        return readFile(`${config.notes_dir}/.hidden/agenda/${format_date_file(date)}.md`, "utf-8")
+    }
+    const agenda = range((24 - 8) * 2).map(() => "")
+
+    for (const event of await get_todays_events(date)) {
+        agenda[get_agenda_slot(event.start!)] = event.name
+        if (get_agenda_slot(event.end!) > get_agenda_slot(event.start!) + 1) {
+            agenda[get_agenda_slot(event.end!) - 1] = "---"
+        }
+    }
+
+    return agenda.join("\n")
+}
+
+function get_agenda_slot(time: Date) {
+    if (time.getHours() === 0) return (24 - 8) * 2
+    return (time.getHours() - 8) * 2 + Math.floor(time.getMinutes() / 30)
+} 
 
 export function format_date_title(date: Date=new Date(), year=true): string {
     const month = date.toLocaleString('en-US', { month: 'long' })
@@ -143,4 +164,12 @@ export function is_past(date: Date) {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     return date < today
+}
+
+export function at(time: string) {
+    const now = new Date()
+    const [h, m] = time.split(":").map(Number)
+    now.setHours(h)
+    now.setMinutes(m)
+    return now
 }

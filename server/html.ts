@@ -15,7 +15,9 @@ export async function PageResponse({ title }: PageAttrs, children: TagChildren) 
             <meta charset="UTF-8">
             
             <link rel="stylesheet" href="/editor.css">
+
             <script src="/editor.js"></script>
+            <script src="/agenda.js"></script>
         </head>
 
         <body>${(await Promise.all(children)).join("")}</body>
