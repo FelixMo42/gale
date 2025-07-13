@@ -2,8 +2,9 @@ import { readFile, writeFile } from "node:fs/promises"
 
 import { RedirectResponse, Request, ResponseBuilder } from "./router.ts"
 import { exists, hash } from "./utils.ts"
+import { get_end_of_day } from "./time.ts"
 
-import { config } from "../config.ts"
+import { config } from "../../config.ts"
 
 export async function gfetch<T>(path: string, params: { [key: string]: string } = {}): Promise<T> {
     const url = new URL(`https://www.googleapis.com${path}`)
@@ -31,7 +32,7 @@ export async function gfetch<T>(path: string, params: { [key: string]: string } 
 
     const data = await response.json()
 
-    const end_of_day = getEndOfDay().getTime()
+    const end_of_day = get_end_of_day().getTime()
     await writeFile(cache_file, JSON.stringify({
         expires: end_of_day > Date.now() ? 0 : end_of_day,
         url: url.toString(),
@@ -85,13 +86,4 @@ export async function gauth(r: Request) {
 
         return ResponseBuilder(200, { "Content-Type": "application/json" }, JSON.stringify(token))
     }
-}
-
-function getEndOfDay() {
-    const now = new Date()
-    return new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1
-    )
 }

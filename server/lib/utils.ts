@@ -1,8 +1,7 @@
-
 import { access, readdir } from "node:fs/promises"
 import { createHash } from "node:crypto"
 
-import { config } from "../config.ts"
+import { config } from "../../config.ts"
 
 export function range(length: number, start: number = 0) {
     return new Array(length).fill(0).map((_, i) => i + start)
@@ -17,7 +16,6 @@ export function fuzzy(query: string, target: string): boolean {
     }
     return qi === query.length
 }
-
 
 export async function exists(path: string) {
     try {

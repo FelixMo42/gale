@@ -1,18 +1,21 @@
 import { opendir, readFile, writeFile } from "node:fs/promises"
 import { join, extname } from "node:path"
 
-import { RedirectResponse, Request, ResponseBuilder, router } from "./router.ts"
-import { exists } from "./utils.ts"
-import { _, PageResponse } from "./html.ts"
-import { calendar } from "./calendar.ts"
-import { search } from "./search.ts"
-import { gauth } from "./gauth.ts"
+import { RedirectResponse, Request, ResponseBuilder, router } from "./lib/router.ts"
+import { exists } from "./lib/utils.ts"
+import { _, PageResponse } from "./lib/html.ts"
+import { gauth } from "./lib/gauth.ts"
+
+import { calendar } from "./plugins/calendar.ts"
+import { agenda } from "./plugins/agenda.ts"
+import { search } from "./plugins/search.ts"
 
 import { config } from "../config.ts"
 
 function main() {
     router([
         gauth,
+        agenda,
         search,
         calendar,
         notes,
@@ -22,7 +25,6 @@ function main() {
 }
 
 main()
-
 
 /***************/
 /* FILE SERVER */

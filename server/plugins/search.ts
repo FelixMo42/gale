@@ -1,6 +1,6 @@
-import { _ } from "./html.ts"
-import { Request, ResponseBuilder } from "./router.ts"
-import { fuzzy, get_all_notes } from "./utils.ts"
+import { _ } from "../lib/html.ts"
+import { Request, ResponseBuilder } from "../lib/router.ts"
+import { fuzzy, get_all_notes } from "../lib/utils.ts"
 
 export async function search(req: Request) {
     if (req.url.startsWith("/api/search")) {

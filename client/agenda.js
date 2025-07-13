@@ -18,45 +18,52 @@ function attach_agenda(agenda) {
 }
 
 function style_agenda(agenda) {
-    let mode = ""
+    // remove old backgrounds
+    agenda.querySelectorAll(".agenga-bg").forEach(el => el.remove())
 
-    for (const line_el of agenda.children) {
-        const line = line_el.innerText.trim()
-
-        if (["wake up", "go too sleep"].includes(line)) {
-            mode = "orange"
-        } else if (line === "train") {
-            mode = "yellow"
-        } else if (["lunch", "dinner"].includes(line)) {
-            mode = "green"
-        } else if (line.includes("boat")) {
-            mode = "rgb(70, 130, 180)"
-        } else if (line.startsWith("work")) {
-            mode = "grey"
-        } else if (line != "" && line != "---") {
-            line_el.nextSibling
-            mode = "red"
-        }
+    for (const line of agenda.children) {
+        const name = line.innerText.trim()
+        if (name) {
+            const bg = document.createElement("div")
         
-        if (mode) {
-            line_el.style.backgroundColor = mode
-        } else {
-            line_el.style.backgroundColor = ""
-        }
+            bg.className = "agenga-bg"
 
-        if (!is_long_event(line_el.nextSibling)) {
-            mode = ""
-        }
+            bg.style.position = "absolute"
+            bg.style.top    = `0px`
+            bg.style.height = `${100 * get_event_length(line)}%`
+            bg.style.left   = `0px`
+            bg.style.right  = `0px`
 
-        if (line === "---") {
-            mode = ""
+            bg.style.zIndex = "-1"
+
+            bg.style.background = get_event_bg(name)
+
+            bg.style.opacity = "50%"
+
+            line.appendChild(bg)
         }
     }
 }
 
-function is_long_event(line_el) {
-    if (!line_el) return false
-    if (line_el.innerText.trim() === "---") return true
-    if (line_el.innerText.trim() === "") return is_long_event(line_el.nextSibling)
-    return false
+function get_event_length(line, length=1) {
+    if (!line.nextSibling) return 1
+    if (line.nextSibling.innerText.trim() === "---") return length + 1
+    if (line.nextSibling.innerText.trim() === "") return get_event_length(line.nextSibling, length + 1)
+    return 1
+}
+
+function get_event_bg(name) {
+    if (["wake up", "go too sleep"].includes(name)) {
+        return "url(/.hidden/images/sun.png)"
+    } else if (name === "train") {
+        return "yellow"
+    } else if (["lunch", "dinner"].includes(name)) {
+        return "green"
+    } else if (name.includes("boat")) {
+        return "rgb(70, 130, 180)"
+    } else if (name.startsWith("work")) {
+        return "grey"
+    } else if (name != "" && name != "---") {
+        return "red"
+    }
 }
