@@ -20,14 +20,14 @@ export function agenda(req: Request) {
         const week = time.get_start_of_week(new Date())
 
         return PageResponse({ title: "" }, [
-            _.aside({ style }, [
-                _.agenda({ date: time.add_days(week, 0) }),
-                _.agenda({ date: time.add_days(week, 1) }),
-                _.agenda({ date: time.add_days(week, 2) }),
-                _.agenda({ date: time.add_days(week, 3) }),
-                _.agenda({ date: time.add_days(week, 4) }),
-                _.agenda({ date: time.add_days(week, 5) }),
-                _.agenda({ date: time.add_days(week, 6) }),
+            _.aside({ style, class: "pad-0" }, [
+                _.agenda({ date: time.add_days(week, 0), headless: true }),
+                _.agenda({ date: time.add_days(week, 1), headless: true }),
+                _.agenda({ date: time.add_days(week, 2), headless: true }),
+                _.agenda({ date: time.add_days(week, 3), headless: true }),
+                _.agenda({ date: time.add_days(week, 4), headless: true }),
+                _.agenda({ date: time.add_days(week, 5), headless: true }),
+                _.agenda({ date: time.add_days(week, 6), headless: true }),
             ]),
             _.search_modal({})
         ])
@@ -55,7 +55,7 @@ _.agenda = async (attrs, _children) => {
     ) * 100
 
     return _.article({ class: "flex col" }, [
-        _.label({}, [`Agenda for ${time.format_date_title(date, false)}`]),
+        _.label({}, [ attrs.label ?? `Agenda for ${time.format_date_title(date, false)}`]),
         _.div({ class: "flex col relative" }, [
             ...time.is_today(date) ? [
                 _.div({
@@ -66,17 +66,17 @@ _.agenda = async (attrs, _children) => {
             _.div({
                 class: "agenda",
                 contenteditable: "true",
-                href: `.hidden/agenda/${time.format_date_file(date)}.md`,
+                href: `/.hidden/agenda/${time.format_date_file(date)}.md`,
             }, [
                 ...agenda.split("\n").map(line =>
                     _.div({}, [ line || "<br>" ])
                 )
             ]),
-            ...range(end_h - start_h, start_h).map(hour =>
+            ...((!attrs.headless) ? range(end_h - start_h, start_h).map(hour =>
                 _.div({ class: "flex row agenda-row" }, [
                     _.div({ class: "agenda-time" }, [ `${hour}` ])
                 ])
-            )
+            ) : [])
         ])
     ])
 }

@@ -53,17 +53,27 @@ function get_event_length(line, length=1) {
 }
 
 function get_event_bg(name) {
-    if (["wake up", "go too sleep"].includes(name)) {
-        return "url(/.hidden/images/sun.png)"
-    } else if (name === "train") {
-        return "yellow"
+    if (["wake up"].includes(name)) {
+        return "url(/.hidden/images/sun.png) no-repeat center / cover"
+    } else if (["go too sleep"].includes(name)) {
+        return "url(/.hidden/images/night.png) no-repeat center / cover"
+    } else if (name.includes("train")) {
+        return "url(/.hidden/images/rail.png) repeat-y right center / 50%"
     } else if (["lunch", "dinner"].includes(name)) {
-        return "green"
+        return bg("food.png", "rgba(0, 155, 0, 0.4)")
     } else if (name.includes("boat")) {
         return "rgb(70, 130, 180)"
     } else if (name.startsWith("work")) {
-        return "grey"
+        return bg("work.png", "rgba(255, 255, 255, 0.5)")
     } else if (name != "" && name != "---") {
         return "red"
+    }
+}
+
+function bg(image, color) {
+    if (!color) {
+        return `url(/.hidden/images/${image}) no-repeat center / cover`
+    } else {
+        return `linear-gradient(${color}, ${color}), ${bg(image)}`
     }
 }

@@ -85,6 +85,8 @@ export function at(time: string) {
     return now
 }
 
-export function get_start_of_week(date: Date) {
-    return add_days(date, -date.getDay()-6)
+export function get_start_of_week(date: Date=new Date()) {
+    const day = date.getDay()
+    const diff = (day === 0 ? -6 : 1) - day
+    return add_days(date, diff)
 }

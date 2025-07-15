@@ -193,7 +193,7 @@ aside article.editor div.h1:first-child {
     overflow: visible;
     text-wrap: nowrap;
     text-overflow: ellipsis;
-    background-size: cover !important;
+    background-size: contain;
     position: relative;
 }
 
@@ -282,6 +282,11 @@ dialog #results a:hover {
 
 .pad {
     padding: 10px;
+}
+
+.pad-0 {
+    padding: 0px !important;
+    gap: 0px !important;
 }
 
 .relative {
