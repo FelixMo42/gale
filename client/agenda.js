@@ -36,7 +36,7 @@ function style_agenda(agenda) {
 
             bg.style.zIndex = "-1"
 
-            bg.style.background = get_event_bg(name)
+            bg.style.background = get_event_bg(name.toLowerCase())
 
             bg.style.opacity = "50%"
 
@@ -53,7 +53,9 @@ function get_event_length(line, length=1) {
 }
 
 function get_event_bg(name) {
-    if (["wake up"].includes(name)) {
+    if (name.startsWith("work")) {
+        return bg("work.png", "rgba(255, 255, 255, 0.5)")
+    } else if (["wake up"].includes(name)) {
         return "url(/.hidden/images/sun.png) no-repeat center / cover"
     } else if (["go too sleep"].includes(name)) {
         return "url(/.hidden/images/night.png) no-repeat center / cover"
@@ -61,10 +63,18 @@ function get_event_bg(name) {
         return "url(/.hidden/images/rail.png) repeat-y right center / 50%"
     } else if (["lunch", "dinner"].includes(name)) {
         return bg("food.png", "rgba(0, 155, 0, 0.4)")
+    } else if (name.includes("baby")) {
+        return bg("charles.png", "rgba(0, 0, 155, 0.4)")
+    } else if (name.includes("meeting")) {
+        return bg("meeting.png", "rgba(255, 0, 0, .6)")
+    } else if (name.includes("eli")) {
+        return bg("eli.png", "rgba(0, 0, 155, 0.4)")
+    } else if (name.includes("peter")) {
+        return bg("peter.png", "rgba(0, 0, 155, 0.4)")
+    } else if (name.includes("social") || name.includes("call") || name.includes("meetup")) {
+        return "rgba(0, 0, 155, 0.4)"
     } else if (name.includes("boat")) {
         return "rgb(70, 130, 180)"
-    } else if (name.startsWith("work")) {
-        return bg("work.png", "rgba(255, 255, 255, 0.5)")
     } else if (name != "" && name != "---") {
         return "red"
     }

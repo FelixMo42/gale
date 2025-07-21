@@ -1,5 +1,6 @@
 :root {
     font-size: 1.3em;
+    /* font-family: 'Courier New', Courier, monospace; */
     font-family: Arial, Helvetica, sans-serif;
 
     --border-radius: 5px;
