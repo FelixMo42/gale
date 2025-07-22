@@ -18,6 +18,7 @@ export async function PageResponse({ title }: PageAttrs, children: TagChildren) 
 
             <script src="/editor.js"></script>
             <script src="/agenda.js"></script>
+            <script src="/modal.js"></script>
         </head>
 
         <body>${(await Promise.all(children)).join("")}</body>
