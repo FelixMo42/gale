@@ -2,7 +2,12 @@ window.addEventListener("load", () => {
     const input = document.querySelector("dialog input")
     input.oninput = () => search(input.value)
     input.onfocus = () => search(input.value)
-    
+    input.onkeydown = (event) => {
+        if (event.key === "Enter") {
+            document.querySelector("#results a:first-child").click()
+        }
+    }
+
     const modal = document.querySelector("dialog")
     modal.addEventListener("click", (e) => {
         if (e.target === modal) modal.close()
@@ -11,22 +16,10 @@ window.addEventListener("load", () => {
     modal.addEventListener("keydown", (event) => {
         if (event.key === "ArrowDown") {
             event.preventDefault()
-            event.stopPropagation()
-            event.stopImmediatePropagation()
-
-            const items = getCurrentSearchList()
-            const focus = items.indexOf(document.activeElement)
-            items.at((focus + 1) % items.length).focus()
-        }
-
-        if (event.key === "ArrowUp") {
+            moveInList(+1)
+        } else if (event.key === "ArrowUp") {
             event.preventDefault()
-            event.stopPropagation()
-            event.stopImmediatePropagation()
-
-            const items = getCurrentSearchList()
-            const focus = items.indexOf(document.activeElement)
-            items.at((focus - 1) % items.length).focus()
+            moveInList(-1)
         }
     })
 
@@ -55,9 +48,14 @@ async function search(q="") {
     document.getElementById("results").innerHTML = html
 }
 
+function moveInList(mod) {
+    const items = getCurrentSearchList()
+    let focus = items.indexOf(document.activeElement)
+    if (focus === -1) { focus = 0 }
+    const index = Math.min(Math.max(focus + mod, 0), items.length - 1)
+    items[index].focus()
+}
+
 function getCurrentSearchList() {
-    return [
-        document.querySelector("dialog input"),
-        ...document.querySelectorAll("dialog #results a")
-    ]
+    return [...document.querySelectorAll("dialog #results a")]
 }

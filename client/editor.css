@@ -253,6 +253,14 @@ dialog #results a {
     border-radius: 5px;
 }
 
+dialog #results a.create {
+    color: grey;
+}
+
+dialog #results:not(:focus-within) a:first-child {
+    outline: auto;
+}
+
 dialog #results a span:not(:last-child) {
     display: inline-block;
     width: 125px;
