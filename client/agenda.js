@@ -10,7 +10,7 @@ function attach_agenda(agenda) {
     agenda.oninput = () => {
         style_agenda(agenda)
 
-        const body = html_to_md(agenda)
+        const body = get_editor_text(agenda)
         fetch(path, { method: "POST", body })
     }
 
