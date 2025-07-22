@@ -19,7 +19,7 @@ export async function search(req: Request) {
                 return `<a href="/${note.replaceAll(" ", "_")}">${parts.join("")}</a>`
             })
             .join("")
-            .concat(`<a href="/${query}.md" class="create">create "${query.toLowerCase().replaceAll(" ", "_")}.md"</a>`)
+            .concat(`<a href="/${query}?create" class="create">create "${query.toLowerCase().replaceAll(" ", "_")}.md"</a>`)
 
         return ResponseBuilder(200, { "content-type": "text/html" }, html)
     }

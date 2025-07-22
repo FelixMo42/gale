@@ -59,13 +59,16 @@ function file_server(base: string) {
 /*********/
 
 async function notes(req: Request) {
-    if (req.url?.includes(".")) return
+    const [note, query] = req.url.split("?")
+    if (note?.includes(".")) return
 
-    if (await exists(`${config.notes_dir}${req.url}.md`)) {
-        return PageResponse({ title: req.url! }, [
+    console.log(note, query)
+
+    if (await exists(`${config.notes_dir}${note}.md`) || query?.includes("create")) {
+        return PageResponse({ title: note! }, [
             _.aside({}, [ _.calendar_widget({}) ]),
             _.main({}, [
-                _.editor({ href: `${req.url}.md` })
+                _.editor({ href: `${note}.md` })
             ]),
             _.aside({}, []),
             _.search_modal({}),
@@ -76,8 +79,8 @@ async function notes(req: Request) {
 
     for await (const path of dir) {
         if (path.isDirectory()) {
-            if (await exists(`${path.parentPath}/${path.name}${req.url}.md`)) {
-                return RedirectResponse(`${path.name}${req.url}`)
+            if (await exists(`${path.parentPath}/${path.name}${note}.md`)) {
+                return RedirectResponse(`${path.name}${note}`)
             }
         }
     }
