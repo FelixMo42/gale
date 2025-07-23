@@ -54,9 +54,9 @@ _.calendar = (_attrs, _children) => {
 _.status_widget = (_attrs, _children) => {
     return _.article({ }, [
         _.label({
-            onclick: "alert('Do five jumping jacks!')",
+            onclick: "alert('focus time!')",
             style: "cursor: pointer;"
-        }, [`Help, I'm stuck!`]),
+        }, [`Focus TIME!`]),
     ])
 }
 
