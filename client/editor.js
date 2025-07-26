@@ -1,4 +1,4 @@
-window.addEventListener("load", () => {
+this.addEventListener("load", () => {
     // attach editors
     document.querySelectorAll('.editor').forEach(editor => {
         attach_editor(editor)
@@ -8,8 +8,8 @@ window.addEventListener("load", () => {
     document
         .querySelectorAll("a")
         .forEach((link) => {
-            const linkPath = new URL(link.href, window.location.origin).pathname
-            const currentPath = window.location.pathname
+            const linkPath = new URL(link.href, this.location.origin).pathname
+            const currentPath = this.location.pathname
 
             if (linkPath === currentPath) {
                 link.classList.add('active')
@@ -300,6 +300,17 @@ function create_line_el(text) {
     const el = document.createElement("DIV")
     el.className = get_line_class(text)
     el.innerHTML = line_to_html(text)
+    
+    requestAnimationFrame(() => {
+        if (el.childNodes?.[0]?.classList?.contains("indent")) {
+            el.style.paddingLeft = `${el.childNodes[0].scrollWidth}px`
+            el.style.textIndent = `-${el.childNodes[0].scrollWidth}px`
+        }
+    })
+
+    // el.querySelectorAll(".indent").forEach((element) => {
+    // })
+
     return el
 }
 
