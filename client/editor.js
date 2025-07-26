@@ -18,32 +18,39 @@ window.addEventListener("load", () => {
 })
 
 function attach_editor(editor) {
-    const path = editor.getAttribute("href")
-
-    fetch(path, { cache: "no-cache" })
+    fetch(editor.getAttribute("href"), { cache: "no-cache" })
         .then(response => response.status == 200 ? response.text() : "")
-        .then(text => editor.innerHTML = text
+        .then(text => editor.replaceChildren(...text
             .split("\n")
-            .map((line, i) => `<div class=${i}>${line_to_html(line)}</div>`)
-            .join("")
-        )
+            .map(create_line_el)
+        ))
 
     editor.addEventListener('keydown', (event) => {
         const edit = key_to_edit(editor, format_key(event))
-
-        if (edit) {
-            if (format_key(event) != "[cmd]z") add_undo_event(edit)
-            event.preventDefault()
-        }
+        if (edit) register_edit(editor, edit, event)
     })
 
     editor.addEventListener('paste', function(event) {
         const area = get_area(editor)
         const text = event.clipboardData.getData('text/plain')
         const edit = replace(editor, area, text)
-        add_undo_event(edit)
-        event.preventDefault()
+        register_edit(editor, edit, event)
     })
+}
+
+function register_edit(editor, edit, event) {
+    event.preventDefault()
+    if (format_key(event) != "[cmd]z") add_undo_event(edit)
+    const body = get_editor_text(editor)
+    fetch(editor.getAttribute("href"), { method: "POST", body })
+}
+
+function get_editor_text(html) {
+    return [...html.childNodes].map(node => {
+        if (node.nodeType == node.TEXT_NODE) return node.textContent
+        if (node.innerText === "\n") return ""
+        return node.innerText
+    }).join("\n")
 }
 
 function format_key(event) {
@@ -290,9 +297,16 @@ function get_parent_div(element) {
 }
 
 function create_line_el(text) {
-    const el = document.createElement("div")
+    const el = document.createElement("DIV")
+    el.className = get_line_class(text)
     el.innerHTML = line_to_html(text)
     return el
+}
+
+function get_line_class(line) {
+    if (line.startsWith("# ")) return "h1 line"
+    if (line.startsWith("## ")) return "h2 line"
+    return "line"
 }
 
 function format_link(name) {
