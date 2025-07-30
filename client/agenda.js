@@ -5,16 +5,12 @@ window.addEventListener("load", () => {
 })
 
 function attach_agenda(agenda) {
-    const path = agenda.getAttribute("href")
-
-    agenda.oninput = () => {
-        style_agenda(agenda)
-
-        const body = get_editor_text(agenda)
-        fetch(path, { method: "POST", body })
+    agenda.preedit = (area, text) => {
+        return [area, text]
     }
 
-    style_agenda(agenda)
+    agenda.postedit = () => style_agenda(agenda)
+    agenda.onload = () => style_agenda(agenda)
 }
 
 function style_agenda(agenda) {
@@ -53,31 +49,48 @@ function get_event_length(line, length=1) {
 }
 
 function get_event_bg(name) {
-    if (name.startsWith("work")) {
-        return bg("work.png", "rgba(255, 255, 255, 0.5)")
-    } else if (["wake up"].includes(name)) {
+    if (["wake up"].includes(name)) {
         return "url(/.hidden/images/sun.png) no-repeat center / cover"
     } else if (["go too sleep"].includes(name)) {
         return "url(/.hidden/images/night.png) no-repeat center / cover"
     } else if (name.includes("train")) {
         return "url(/.hidden/images/rail.png) repeat-y right center / 50%"
-    } else if (["lunch", "dinner"].includes(name)) {
-        return bg("food.png", "rgba(0, 155, 0, 0.4)")
-    } else if (name.includes("baby")) {
-        return bg("charles.png", "rgba(0, 0, 155, 0.4)")
+
+    } else if (name.startsWith("work")) {
+        return bg("work.png", "rgba(255, 255, 255, 0.5)")
+
+    } else if (name.includes("lunch") || name.includes("dinner")) {
+        return bg("food.png", tags.refresh)
+    
     } else if (name.includes("meeting")) {
-        return bg("meeting.png", "rgba(255, 0, 0, .6)")
+        return bg("meeting.png", tags.important)
+
+    } else if (name.includes("baby")) {
+        return bg("charles.png", tags.social)
     } else if (name.includes("eli")) {
-        return bg("eli.png", "rgba(0, 0, 155, 0.4)")
+        return bg("eli.png", tags.social)
     } else if (name.includes("peter")) {
-        return bg("peter.png", "rgba(0, 0, 155, 0.4)")
+        return bg("peter.png", tags.social)
+    } else if (name.includes("alex")) {
+        return tags.social
     } else if (name.includes("social") || name.includes("call") || name.includes("meetup")) {
-        return "rgba(0, 0, 155, 0.4)"
-    } else if (name.includes("boat")) {
-        return "rgb(70, 130, 180)"
+        return tags.social
+
+    } else if (name.includes("movie")) {
+        return tags.project
+    } else if (name.includes("utg")) {
+        return tags.project
+
     } else if (name != "" && name != "---") {
         return "red"
     }
+}
+
+const tags = {
+    social: `rgba(0, 0, 155, 0.4)`,
+    important: `rgba(255, 0, 0, .6)`,
+    refresh: `rgba(0, 155, 0, 0.4)`,
+    project: "brown"
 }
 
 function bg(image, color) {

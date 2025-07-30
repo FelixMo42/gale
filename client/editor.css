@@ -79,12 +79,14 @@ aside article.editor div.h1:first-child {
 /* EDITOR */
 
 .editor {
-    width: 100%;
     max-width: 800px;
     outline: none;
     font-family: inherit;
     font-size: inherit;
     white-space: pre-wrap;
+}
+
+main .editor:last-child {
     padding-bottom: 100px;
 }
 
@@ -119,6 +121,18 @@ aside article.editor div.h1:first-child {
     all: unset;
     display: block;
     border-bottom: 1px solid lightgray;
+}
+
+.editor .indent {
+    color: gray;
+}
+
+.editor .task.done {
+    color: green;
+}
+
+.editor .task.stop {
+    color: red;
 }
 
 /* CALENDAR */
@@ -171,7 +185,7 @@ aside article.editor div.h1:first-child {
     text-wrap: nowrap;
 }
 
-.agenda {
+.agenda.editor {
     position: absolute;
 
     right: 0px;
@@ -187,7 +201,7 @@ aside article.editor div.h1:first-child {
     outline: none;
 }
 
-.agenda div {
+.agenda.editor .line {
     flex: 1;
     min-height: 0px;
     padding-left: 5px;

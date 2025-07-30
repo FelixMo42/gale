@@ -41,10 +41,8 @@ interface Event {
     color?: string,
 }
 
-_.agenda = async (attrs, _children) => {
+_.agenda = (attrs, _children) => {
     const date = (attrs.date as Date) ?? new Date()
-
-    const agenda = await get_agenda(date)
 
     const start_h = 8
     const end_h   = 24
@@ -64,14 +62,10 @@ _.agenda = async (attrs, _children) => {
                 })
             ] : [],
             _.div({
-                class: "agenda",
+                class: "editor agenda",
                 contenteditable: "true",
                 href: `/.hidden/agenda/${time.format_date_file(date)}.md`,
-            }, [
-                ...agenda.split("\n").map(line =>
-                    _.div({}, [ line || "<br>" ])
-                )
-            ]),
+            }),
             ...range(end_h - start_h, start_h).map(hour =>
                 _.div({ class: "flex row agenda-row" }, [
                     _.div({ class: "agenda-time" }, [ `${hour}` ])

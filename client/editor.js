@@ -24,6 +24,9 @@ function attach_editor(editor) {
             .split("\n")
             .map(create_line_el)
         ))
+        .then(() => {
+            if (editor.onload) editor.onload()
+        })
 
     editor.addEventListener('keydown', (event) => {
         const edit = key_to_edit(editor, format_key(event))
@@ -41,8 +44,9 @@ function attach_editor(editor) {
 function register_edit(editor, edit, event) {
     event.preventDefault()
     if (format_key(event) != "[cmd]z") add_undo_event(edit)
-    const body = get_editor_text(editor)
-    fetch(editor.getAttribute("href"), { method: "POST", body })
+    editor.value = get_editor_text(editor)
+    fetch(editor.getAttribute("href"), { method: "POST", body: editor.value })
+    if (editor.postedit) editor.postedit(edit, event)
 }
 
 function get_editor_text(html) {
@@ -137,12 +141,15 @@ function line_to_html(line) {
 
         [/\~\~.*\~\~/g, g => `<span class="strike">${g}</span>`],
 
-        [/^\s*\√\s+/g, g => `<span class="task indent">${g}</span>`],
-        [/^\s*\_\s+/g, g => `<span class="task indent">${g}</span>`],
+        [/^\s*\√\s+/g, g => `<span class="indent task done">${g}</span>`],
+        [/^\s*\_\s+/g, g => `<span class="indent task todo">${g}</span>`],
+        [/^\s*\~\s+/g, g => `<span class="indent task work">${g}</span>`],
+        [/^\s*\X\s+/g, g => `<span class="indent task stop">${g}</span>`],
 
         [/^\s*\-\s+/g, g => `<span class="indent">${g}</span>`],
         [/^\s*\*\s+/g, g => `<span class="indent">${g}</span>`],
         [/^\s*\>\s+/g, g => `<span class="indent">${g}</span>`],
+        [/^\s*[\d]+\.\s+/g, g => `<span class="indent">${g}</span>`],
 
         [/\[\[[^\]]+\]\]/g, g => `<a onclick="document.location='/${format_link(g)}'">${g}</a>`],
     ])
@@ -172,6 +179,10 @@ function get_document_fragment_text(frag) {
 }
 
 function replace(editor, area, text) {
+    if (editor.preedit) {
+        [ area, text ] = editor.preedit(area, text)    
+    }
+
     const edit = { area, new: text }
 
     // delete old text in the range
