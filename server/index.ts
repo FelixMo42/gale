@@ -5,24 +5,24 @@ import { exec } from "node:child_process"
 import { RedirectResponse, Request, ResponseBuilder, router } from "./lib/router.ts"
 import { exists } from "./lib/utils.ts"
 import { _, PageResponse } from "./lib/html.ts"
-import { gauth } from "./lib/gauth.ts"
 
 import { calendar } from "./plugins/calendar.ts"
 import { agenda } from "./plugins/agenda.ts"
 import { search } from "./plugins/search.ts"
+import { template } from "./plugins/template.ts"
 
 import { config } from "../config.ts"
 
 function main() {
     // run the router
     router([
-        gauth,
         agenda,
         search,
         calendar,
         notes,
         file_server(config.notes_dir),
         file_server("./client"),
+        template,
     ]).listen(8042)
 
     // run the action scheduler
@@ -69,22 +69,25 @@ main()
 /* FILE SERVER */
 /***************/
 
+async function FileResponse(path: string) {
+    const mime_types: { [key: string]: string } = {
+        ".css"  : "text/css",
+        ".js"   : "text/javascript",
+        ".html" : "text/html",
+        ".md"   : "text/markdown",
+    }
+
+    return ResponseBuilder(200,
+        { "Content-Type": mime_types[extname(path)] },
+        await readFile(path)
+    )
+}
+
 function file_server(base: string) {
     return async (req: Request) => {
         if (req.method === "GET") {
             if (!await exists(`${base}${req.url}`)) return
-            
-            const mime_types: { [key: string]: string } = {
-                ".css"  : "text/css",
-                ".js"   : "text/javascript",
-                ".html" : "text/html",
-                ".md"   : "text/markdown",
-            }
-
-            return ResponseBuilder(200,
-                { "Content-Type": mime_types[extname(req.url!)] },
-                await readFile(join(base, req.url!))
-            )
+            return FileResponse(join(base, req.url))
         } else if (req.method === "POST") {
             await writeFile(join(base, req.url!), req.body)
             return ResponseBuilder(200)
