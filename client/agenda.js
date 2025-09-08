@@ -51,11 +51,13 @@ function get_event_length(line, length=1) {
 function get_event_bg(name) {
     if (["wake up"].includes(name)) {
         return "url(/.hidden/images/sun.png) no-repeat center / cover"
-    } else if (["go too sleep"].includes(name)) {
+    } else if (["go to sleep"].includes(name)) {
         return "url(/.hidden/images/night.png) no-repeat center / cover"
     } else if (name.includes("train")) {
         return "url(/.hidden/images/rail.png) repeat-y right center / 50%"
 
+    } else if (name.startsWith("e42")) {
+        return bg("e42.png", "rgba(255, 255, 255, 0.5)")
     } else if (name.startsWith("work")) {
         return bg("work.png", "rgba(255, 255, 255, 0.5)")
 
@@ -67,12 +69,8 @@ function get_event_bg(name) {
 
     } else if (name.includes("baby")) {
         return bg("charles.png", tags.social)
-    } else if (name.includes("eli")) {
-        return bg("eli.png", tags.social)
-    } else if (name.includes("peter")) {
-        return bg("peter.png", tags.social)
-    } else if (name.includes("alex")) {
-        return tags.social
+    } else if (includesAny(name, friends)) {
+        return bg(`${getIncluded(name, friends)}.png`, tags.social)
     } else if (name.includes("social") || name.includes("call") || name.includes("meetup")) {
         return tags.social
 
@@ -86,11 +84,26 @@ function get_event_bg(name) {
     }
 }
 
+const friends = [
+    "alex",
+    "pater",
+    "eli",
+    "autumn",
+]
+
 const tags = {
     social: `rgba(0, 0, 155, 0.4)`,
     important: `rgba(255, 0, 0, .6)`,
     refresh: `rgba(0, 155, 0, 0.4)`,
     project: "brown"
+}
+
+function includesAny(name, friends) {
+    return friends.some(friend => name.includes(friend))
+}
+
+function getIncluded(name, friends) {
+    return friends.find(friend => name.includes(friend))
 }
 
 function bg(image, color) {

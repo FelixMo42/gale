@@ -199,7 +199,7 @@ function replace(editor, area, text) {
         const accross_lines = a != b
 
         if (accross_lines) {
-            a.appendChild(...b.childNodes)
+            a.append(...b.childNodes)
             b.remove()
         }
     }

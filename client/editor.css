@@ -319,3 +319,7 @@ dialog #results a:hover {
 .scroll {
     overflow-y: scroll;
 }
+
+.highlight {
+    background-color: yellow;
+}
