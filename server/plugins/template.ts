@@ -20,7 +20,7 @@ function pat_match(pat: string, str: string) {
 const templates = {
 
     "/.hidden/agenda/*.md": () =>
-"wake up\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ngo to sleep",
+"wake up\n---\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ngo to sleep\n---",
 
     "/diary/*.md": (path: string) =>
 `# ${get_title_from_path(path)}
