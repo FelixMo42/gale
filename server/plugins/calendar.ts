@@ -36,7 +36,11 @@ export function calendar(req: Request) {
 
 _.calendar = (_attrs, _children) => {
     return _.article({}, [
-        _.label({}, [config.name]),
+        _.label({}, [
+            _.a({  href: "?cycle=1" }, ["<"]),
+            _.div({ class: "flex" }, [config.name]),
+            _.a({ href: "?cycle=1" }, [">"]),
+        ]),
         ...range(12).map(week =>
             _.div({ class: "row" }, [
                 ...range(7, week * 7).map(day => {

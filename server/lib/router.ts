@@ -2,8 +2,9 @@ import { Buffer } from "node:buffer"
 import { Server, ServerResponse, type OutgoingHttpHeaders } from "node:http"
 
 export interface Request {
-    url: string,
     method: string,
+    url: string,
+    query: URLSearchParams,
     body: string,
 }
 
@@ -20,9 +21,12 @@ export function router(layers: Array<(r: Request) => Promise<ResponseBuilder | u
 
         // respond to the request
         req.on("end", async () => {
+            const url = new URL(req.url!, "http://localhost")
+ 
             const response_builder = await handle_response({
-                url: decodeURIComponent(req.url!),
                 method: req.method!,
+                url: url.pathname,
+                query: url.searchParams,
                 body,
             })
 

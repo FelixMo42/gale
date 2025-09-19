@@ -7,3 +7,6 @@ gale.code-workspace
 
 # misc
 .cache
+
+# mac
+.DS_Store

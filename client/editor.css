@@ -59,6 +59,8 @@ aside article label {
     padding: 5px;
     font-weight: bold;
     background-color: lightgray;
+    display: flex;
+    flex-direction: row;
 }
 
 aside article.editor {
