@@ -14,7 +14,7 @@ export function calendar(req: Request) {
 
         return PageResponse({ title: time.format_date_title(date) }, [
             _.aside({}, [
-                _.calendar({ date }),
+                _.calendar({ date, cycle: req.query.get("cycle")! }),
                 _.editor({
                     href: `/.hidden/week/${week}.md`,
                     class: "flex scroll editor"
@@ -34,17 +34,24 @@ export function calendar(req: Request) {
     }
 }
 
-_.calendar = (_attrs, _children) => {
+
+
+_.calendar = (attrs, _children) => {
+    const cycle = Number(attrs.cycle ?? time.date_to_cycle(new Date(attrs.date as string)))
+
+    const cycle_start = new Date(config.start)
+    cycle_start.setDate(cycle_start.getDate() + 84 * cycle)
+
     return _.article({}, [
         _.label({}, [
-            _.a({  href: "?cycle=1" }, ["<"]),
-            _.div({ class: "flex" }, [config.name]),
-            _.a({ href: "?cycle=1" }, [">"]),
+            _.a({  href: `?cycle=${cycle - 1}` }, ["<"]),
+            _.div({ class: "flex" }, [config.cycle_names[cycle] ?? `c${cycle}`] ),
+            _.a({ href: `?cycle=${cycle + 1}` }, [">"]),
         ]),
         ...range(12).map(week =>
             _.div({ class: "row" }, [
                 ...range(7, week * 7).map(day => {
-                    const date = time.cycle_day_to_date(config.start, day)
+                    const date = time.cycle_day_to_date(cycle_start, day)
                     return _.a({
                         class: `day ${get_calendar_day_class(date)}`,
                         href: `/diary/${time.format_date_file(date)}`

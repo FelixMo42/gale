@@ -9,6 +9,18 @@ export function get_end_of_day() {
     )
 }
 
+export function date_to_cycle(date: Date) {
+    console.log(days_between(config.start, date))
+    return Math.floor(days_between(config.start, date) / 84)
+}
+
+export function days_between(date1: Date, date2: Date) {
+  const msPerDay = 1000 * 60 * 60 * 24
+  const utc1 = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate())
+  const utc2 = Date.UTC(date2.getFullYear(), date2.getMonth(), date2.getDate())
+  return Math.floor((utc2 - utc1) / msPerDay)
+}
+
 export function date_to_cycle_day(date: Date) {
     const current = new Date(date)
     current.setHours(8)
