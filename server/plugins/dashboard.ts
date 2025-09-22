@@ -2,6 +2,8 @@ import { readFile, writeFile } from "node:fs/promises";
 import { _ } from "../lib/html.ts"
 import { RedirectResponse, Request } from "../lib/router.ts";
 import { exists } from "../lib/utils.ts";
+import { join } from "node:path";
+import { config } from "../../config.ts";
 
 const apis = new Map<string, Api>()
 
@@ -45,11 +47,9 @@ export function dashboard(r: Request) {
 
 function create_habit_sheet(name: string) {
     const sheet = json_db<{
-        streak: number,
         days: string[],
     }>(name, {
         days: [],
-        streak: 0,
     })
 
     return {
@@ -61,7 +61,7 @@ function create_habit_sheet(name: string) {
             } else {
                 data.days.push(date)
             }
-            sheet.save()
+            await sheet.save()
         },
         async get_streak() {
             const data = await sheet.load()
@@ -71,19 +71,25 @@ function create_habit_sheet(name: string) {
 }
 
 function json_db<T>(name: string, base: T) {
-    const path = `.hidden/db/${name}.json`
+    const path = join(config.notes_dir, `.hidden/db/${name}.json`)
 
     let data: T | undefined = undefined;
 
     return {
         async load(): Promise<T> {
             if (data) return data
-            if (!await exists(path)) return base
-            data = JSON.parse(await readFile(path, "utf-8")) as T
+    
+            if (!await exists(path)) {
+                data = base
+            } else {
+                data = JSON.parse(await readFile(path, "utf-8")) as T
+            }
+
             return data
         },
-        save(update=data) {
-            writeFile(path, JSON.stringify(update))
+        async save(update=data) {
+            console.log(update, data, JSON.stringify(update))
+            await writeFile(path, JSON.stringify(update))
         },
     }
 }
