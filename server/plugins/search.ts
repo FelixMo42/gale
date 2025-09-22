@@ -3,9 +3,8 @@ import { Request, ResponseBuilder } from "../lib/router.ts"
 import { fuzzy, get_all_notes } from "../lib/utils.ts"
 
 export async function search(req: Request) {
-    if (req.url.startsWith("/api/search")) {
-        const [_path, query] = req.url.split("?q=")
-
+    if (req.url == "/api/search") {
+        const query = req.query.get("q")
         const notes = await get_all_notes()
 
         const html = notes

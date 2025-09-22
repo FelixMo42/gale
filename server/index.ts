@@ -10,12 +10,14 @@ import { calendar } from "./plugins/calendar.ts"
 import { agenda } from "./plugins/agenda.ts"
 import { search } from "./plugins/search.ts"
 import { template } from "./plugins/template.ts"
+import { dashboard } from "./plugins/dashboard.ts";
 
 import { config } from "../config.ts"
 
 function main() {
     // run the router
     router([
+        dashboard,
         agenda,
         search,
         calendar,

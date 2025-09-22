@@ -15,10 +15,7 @@ export function calendar(req: Request) {
         return PageResponse({ title: time.format_date_title(date) }, [
             _.aside({}, [
                 _.calendar({ date, cycle: req.query.get("cycle")! }),
-                _.editor({
-                    href: `/.hidden/week/${week}.md`,
-                    class: "flex scroll editor"
-                }),
+                _.dashboard({}),
             ]),
             _.main({}, [
                 _.editor({
@@ -33,8 +30,6 @@ export function calendar(req: Request) {
         ])
     }
 }
-
-
 
 _.calendar = (attrs, _children) => {
     const cycle = Number(attrs.cycle ?? time.date_to_cycle(new Date(attrs.date as string)))

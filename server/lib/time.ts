@@ -10,7 +10,6 @@ export function get_end_of_day() {
 }
 
 export function date_to_cycle(date: Date) {
-    console.log(days_between(config.start, date))
     return Math.floor(days_between(config.start, date) / 84)
 }
 

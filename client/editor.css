@@ -325,3 +325,7 @@ dialog #results a:hover {
 .highlight {
     background-color: yellow;
 }
+
+.center {
+    text-align: center;
+}

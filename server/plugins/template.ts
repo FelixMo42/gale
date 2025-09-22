@@ -27,8 +27,6 @@ const templates = {
 
 tasks:
 
-# Journal
-
 `,
 
 }
