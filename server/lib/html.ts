@@ -28,7 +28,7 @@ export async function PageResponse({ title }: PageAttrs, children: TagChildren) 
 }
 
 type TagAttrs    = { [key: string]: object | string | number | boolean }
-type TagChildren = (string | number | Promise<string>)[]
+type TagChildren = (string | number | Promise<string | number>)[]
 type TagBuilder  = (attrs: TagAttrs, children?: TagChildren) => Promise<string> | string
 
 export const _ = new Proxy({} as { [key: string]: TagBuilder }, {

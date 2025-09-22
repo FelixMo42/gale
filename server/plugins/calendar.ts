@@ -10,7 +10,6 @@ export function calendar(req: Request) {
         return RedirectResponse(`/diary/${time.format_date_file(new Date())}`)
     } else if (req.url?.match(/^\/diary\/\d\d\d\d-\d\d?-\d\d?$/)) {
         const date = new Date(req.url.slice(7))
-        const week = Math.floor(time.date_to_cycle_day(date) / 7) + 1
 
         return PageResponse({ title: time.format_date_title(date) }, [
             _.aside({}, [
