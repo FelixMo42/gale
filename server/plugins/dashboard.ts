@@ -4,6 +4,7 @@ import { RedirectResponse, Request } from "../lib/router.ts";
 import { exists } from "../lib/utils.ts";
 import { join } from "node:path";
 import { config } from "../../config.ts";
+import { format_date_file } from "../lib/time.ts";
 
 const apis = new Map<string, Api>()
 
@@ -15,13 +16,60 @@ const click_exersize   = api(() => yoga_habit.toggle_today())
 const click_productive = api(() => productive_habit.toggle_today())
 const click_social     = api(() => social_habit.toggle_today())
 
-_.dashboard = (_attrs, _children) => {
+interface Task {
+    text: string,
+    status: string,
+}
+
+async function get_tasks(date: Date) {
+    const path = join(config.notes_dir, "diary", format_date_file(date) + ".md")
+    const file = (await readFile(path, "utf8")).split("\n")
+
+    const tasks = [] as Task[]
+
+    for (let i = 1; i < file.length; i++) {
+        if (file[i].startsWith("#")) break
+        if (file[i].startsWith("_ ") ||
+            file[i].startsWith("√ ") ||
+            file[i].startsWith("~ ") ||
+            file[i].startsWith("X ")
+        ) tasks.push({
+            text: file[i].substring(2).trim(),
+            status: file[i][0]
+        })
+    }
+    return tasks
+}
+
+function get_top_priority_task(tasks: Task[]) {
+    return tasks.find(task => task.status == "_")?.text!
+}
+
+function ins(tasks: Task[], status: string) {
+    return tasks.filter(task => status.includes(task.status))
+}
+
+function percent(n: number) {
+    return Math.floor(n * 100)
+}
+
+_.dashboard = async (_attrs, _children) => {
+    const tasks = await get_tasks(new Date())
+    const done  = ins(tasks, "√X")
+
     return _.article({ class: "flex col" }, [
-        _.div({ class: "flex" }),
+        _.div({ class: "flex pad" }, [
+            _.b({}, [ "Top priority: " ]),
+            get_top_priority_task(tasks)
+        ]),
+        _.div({ class: "flex pad" }, [
+            _.b({}, [ "Percent: " ]),
+            `${done.length}/${tasks.length} = ${percent(done.length/tasks.length)}%`
+        ]),
         _.div({ class: "row" }, [
-            _.a({ href: click_exersize, class: "center flex", style: "background-color: red; padding: 10px" }, [ yoga_habit.get_streak() ]),
-            _.a({ href: click_productive, class: "center flex", style: "background-color: green; padding: 10px" }, [ productive_habit.get_streak() ]),
-            _.a({ href: click_social, class: "center flex", style: "background-color: lightblue; padding: 10px" }, [ social_habit.get_streak() ]),
+            _.a({ href: click_exersize, class: "center flex", style: "background: url(/.hidden/images/heart.jpg); background-size: cover; background-position: center; padding: 10px; color: black;" }, [ yoga_habit.get_streak() ]),
+            _.a({ href: click_productive, class: "center flex", style: "background: url(/.hidden/images/garden.png); background-size: cover; background-position: center; padding: 10px; color: black;" }, [ productive_habit.get_streak() ]),
+            _.a({ href: click_social, class: "center flex", style: "background: url(/.hidden/images/water.png); background-size: cover; background-position: center; padding: 10px; color: black;" }, [ social_habit.get_streak() ]),
         ])
     ])
 }
