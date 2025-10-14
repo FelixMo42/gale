@@ -54,24 +54,28 @@ function percent(n: number) {
 }
 
 _.dashboard = async (_attrs, _children) => {
-    const tasks = await get_tasks(new Date())
-    const done  = ins(tasks, "√X")
+    try {
+        const tasks = await get_tasks(new Date())
+        const done  = ins(tasks, "√X")
 
-    return _.article({ class: "flex col" }, [
-        _.div({ class: "flex pad" }, [
-            _.b({}, [ "Top priority: " ]),
-            get_top_priority_task(tasks)
-        ]),
-        _.div({ class: "flex pad" }, [
-            _.b({}, [ "Percent: " ]),
-            `${done.length}/${tasks.length} = ${percent(done.length/tasks.length)}%`
-        ]),
-        _.div({ class: "row" }, [
-            _.a({ href: click_exersize, class: "center flex", style: "background: url(/.hidden/images/heart.jpg); background-size: cover; background-position: center; padding: 10px; color: black;" }, [ yoga_habit.get_streak() ]),
-            _.a({ href: click_productive, class: "center flex", style: "background: url(/.hidden/images/garden.png); background-size: cover; background-position: center; padding: 10px; color: black;" }, [ productive_habit.get_streak() ]),
-            _.a({ href: click_social, class: "center flex", style: "background: url(/.hidden/images/water.png); background-size: cover; background-position: center; padding: 10px; color: black;" }, [ social_habit.get_streak() ]),
+        return _.article({ class: "flex col" }, [
+            _.div({ class: "flex pad" }, [
+                _.b({}, [ "Top priority: " ]),
+                get_top_priority_task(tasks)
+            ]),
+            _.div({ class: "flex pad" }, [
+                _.b({}, [ "Percent: " ]),
+                `${done.length}/${tasks.length} = ${percent(done.length/tasks.length)}%`
+            ]),
+            _.div({ class: "row" }, [
+                _.a({ href: click_exersize, class: "center flex", style: "background: url(/.hidden/images/heart.jpg); background-size: cover; background-position: center; padding: 10px; color: black;" }, [ yoga_habit.get_streak() ]),
+                _.a({ href: click_productive, class: "center flex", style: "background: url(/.hidden/images/garden.png); background-size: cover; background-position: center; padding: 10px; color: black;" }, [ productive_habit.get_streak() ]),
+                _.a({ href: click_social, class: "center flex", style: "background: url(/.hidden/images/water.png); background-size: cover; background-position: center; padding: 10px; color: black;" }, [ social_habit.get_streak() ]),
+            ])
         ])
-    ])
+    } catch {
+        return _.article({ class: "flex col" }, [])
+    }
 }
 
 ///
