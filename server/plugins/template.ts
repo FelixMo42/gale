@@ -25,8 +25,6 @@ const templates = {
     "/diary/*.md": (path: string) =>
 `# ${get_title_from_path(path)}
 
-tasks:
-
 `,
 
 }
