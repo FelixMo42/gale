@@ -49,6 +49,7 @@ function get_event_length(line, length=1) {
 }
 
 function get_event_bg(name) {
+
     if (["wake up"].includes(name)) {
         return "url(/.hidden/images/sun.png) no-repeat center / cover"
     } else if (["go to sleep"].includes(name)) {
@@ -56,10 +57,13 @@ function get_event_bg(name) {
     } else if (name.includes("train") || name.includes("drive") || name.includes("bus")) {
         return "url(/.hidden/images/rail.png) repeat-y right center / 50%"
 
-    } else if (name.startsWith("e42")) {
+    } else if (name.includes("42")) {
         return bg("e42.png", "rgba(255, 255, 255, 0.5)")
     } else if (name.startsWith("work")) {
         return bg("work.png", "rgba(255, 255, 255, 0.5)")
+
+    } else if (name.includes("pse1")) {
+        return bg("protection_civile.png", "rgba(255, 255, 255, 0.5)")
 
     } else if (name.includes("lunch") || name.includes("dinner")) {
         return bg("food.png", tags.refresh)
@@ -90,6 +94,9 @@ const friends = [
     "eli",
     "autumn",
     "kate",
+    "max",
+    "miles",
+    "mallika"
 ]
 
 const tags = {

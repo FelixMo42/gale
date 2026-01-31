@@ -151,7 +151,7 @@ function line_to_html(line) {
         [/^\s*\>\s+/g, g => `<span class="indent">${g}</span>`],
         [/^\s*[\d]+\.\s+/g, g => `<span class="indent">${g}</span>`],
 
-        [/\[\[[^\]]+\]\]/g, g => `<a onclick="document.location='/${format_link(g)}'">${g}</a>`],
+        [/\[\[[^\]]+\]\]/g, g => `<a href="/${format_link(g)}">${g}</a>`],
     ])
 }
 
