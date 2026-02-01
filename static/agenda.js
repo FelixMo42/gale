@@ -51,11 +51,11 @@ function get_event_length(line, length=1) {
 function get_event_bg(name) {
 
     if (["wake up"].includes(name)) {
-        return "url(/.hidden/images/sun.png) no-repeat center / cover"
+        return "url(/fs/.hidden/images/sun.png) no-repeat center / cover"
     } else if (["go to sleep"].includes(name)) {
-        return "url(/.hidden/images/night.png) no-repeat center / cover"
+        return "url(/fs/.hidden/images/night.png) no-repeat center / cover"
     } else if (name.includes("train") || name.includes("drive") || name.includes("bus")) {
-        return "url(/.hidden/images/rail.png) repeat-y right center / 50%"
+        return "url(/fs/.hidden/images/rail.png) repeat-y right center / 50%"
 
     } else if (name.includes("42")) {
         return bg("e42.png", "rgba(255, 255, 255, 0.5)")
@@ -116,7 +116,7 @@ function getIncluded(name, friends) {
 
 function bg(image, color) {
     if (!color) {
-        return `url(/.hidden/images/${image}) no-repeat center / cover`
+        return `url(/fs/.hidden/images/${image}) no-repeat center / cover`
     } else {
         return `linear-gradient(${color}, ${color}), ${bg(image)}`
     }
