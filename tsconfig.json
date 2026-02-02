@@ -8,6 +8,9 @@
     "jsx": "react-jsx",
     "jsxImportSource": "@kitajs/html",
     "allowJs": true,
+    "types": [
+      "@kitajs/html/htmx.d.ts"
+    ],
 
     // Bundler mode
     "moduleResolution": "bundler",

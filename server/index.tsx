@@ -1,4 +1,7 @@
 import { file } from "bun"
+import * as time from "./utils/time.ts"
+import { CalendarWidget, InboxWidget, AgendaWidget, StatusWidget } from "./widgets.tsx"
+import { api, get } from "./utils/api.ts"
 
 async function html(html: Promise<string> | string) {
     return new Response(await html, {
@@ -8,62 +11,6 @@ async function html(html: Promise<string> | string) {
     })
 }
 
-export function range(length: number, start: number = 0) {
-    return new Array(length).fill(0).map((_, i) => i + start)
-}
-
-function CalendarWidget() {
-    return <article>
-        <label>
-            <a>{"<"}</a>
-            <div class="flex">Calendar</div>
-            <a>{">"}</a>
-        </label>
-        {range(6).map(week => <div class="row">
-            {range(7).map(day => <a class="day">{day}</a>)}
-        </div>)}
-    </article>
-}
-
-function Fileswidget() {
-    return <article class="flex">
-        <label>Files</label>
-    </article>
-}
-
-export function format_date_file(date: Date) {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
-}
-
-function AgendaWidget({ date = new Date() }) {
-    const start_h = 8
-    const end_h   = 24
-
-    return <article class="flex col">
-        <label>Agenda</label>
-        <div class="flex col relative">
-            <div
-                class="editor agenda"
-                contenteditable="true"
-                href={`fs/.hidden/agenda/${format_date_file(date)}.md`}
-            ></div>
-            {range(end_h - start_h, start_h).map(hour =>
-                <div class="flex row agenda-row">
-                    <div class="agenda-time">{hour}</div>
-                </div>
-            )}
-        </div>
-    </article>
-}
-
-function StatusWidget() {
-    return <article>
-        <label>
-            <div class="flex">Status</div>
-        </label>
-    </article>
-}
-
 async function page(req: Request) {
     return "<!DOCTYPE html>" + <html>
         <head>
@@ -71,15 +18,16 @@ async function page(req: Request) {
 
             <meta charset="UTF-8" />
 
-            <link rel="stylesheet" href="static/editor.css" />
+            <link rel="stylesheet" href="/static/editor.css" />
 
-            <script src="static/editor.js"></script>
-            <script src="static/agenda.js"></script>
+            <script src="/static/editor.js"></script>
+            <script src="/static/agenda.js"></script>
+            <script src="/static/htmx.min.js"></script>
         </head>
         <body>
                 <aside>
                     <CalendarWidget />
-                    <Fileswidget />
+                    <InboxWidget />
                 </aside>
                 <main>
                     <div
@@ -102,13 +50,29 @@ function get_path(req: Request, prefix: string = "") {
 
 const FS_PATH = "/Users/felixmoses/Documents/journal/"
 
+function get_title_from_path(path: string) {
+    const timestamp = path.match(/\d\d\d\d-\d\d-\d\d/)![0]
+    return time.format_date_title(new Date(timestamp))
+}
+
+function template(path: string) {
+    if (path.startsWith(".hidden/agenda/"))
+        return `wake up\n---\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ngo to sleep\n---`
+    if (path.startsWith("diary/"))
+        return `# ${get_title_from_path(path)}\n\n`
+    return ""
+}
+
 Bun.serve({
     port: 8042,
     routes: {
         "/static/*": (req) => new Response(file(get_path(req))),
         "/fs/*": {
-            GET: (req) => {
-                const f = file(FS_PATH + get_path(req, "fs/"))
+            GET: async (req) => {
+                const path = get_path(req, "fs/")
+                const f = file(FS_PATH + path)
+                if (!await f.exists())
+                    return new Response(template(path))
                 return new Response(f)
             },
             POST: async (req) => {
@@ -119,6 +83,9 @@ Bun.serve({
         },
     },
     fetch(request) {
+        const path = get_path(request) 
+        if (path.startsWith("api/"))
+            return html(api.get(path.split("/").at(-1)!)!(request))
         return html(page(request))
     }
 })
