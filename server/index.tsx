@@ -37,11 +37,15 @@ async function page(req: Request) {
                     ></div>
                 </main>
                 <aside>
-                    <AgendaWidget />
+                    <AgendaWidget date={get_date_from_request(req)} />
                     <StatusWidget />
                 </aside>
         </body>
     </html>
+}
+
+function get_date_from_request(req: Request) {
+    return new Date(req.url.match(/\d\d\d\d-\d\d-\d\d/)![0])
 }
 
 function get_path(req: Request, prefix: string = "") {
