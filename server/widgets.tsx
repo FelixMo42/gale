@@ -1,7 +1,7 @@
 import * as time from "./utils/time.ts"
 import { range } from "./utils/math.ts"
 import { cb, get, set } from "./utils/api.ts"
-import { redis } from "bun";
+import { get_inbox } from "./inbox.tsx"
 
 export function CalendarWidget({
     year = 2026,
@@ -40,7 +40,7 @@ export function CalendarWidget({
 }
 
 export function InboxWidget() {
-    return <article class="flex">
+    return <article class="flex scroll" hx-get={get_inbox} hx-trigger="load">
     </article>
 }
 
@@ -84,7 +84,7 @@ const click_yoga = cb(() => habit_toggle("yoga"))
 const click_grow = cb(() => habit_toggle("grow"))
 const click_live = cb(() => habit_toggle("live"))
 
-export function StatusWidget() {
+export function HabitWidget() {
     const style = (bg: string) => ({
         background: `url(/fs/.hidden/images/${bg})`,
         backgroundSize: "cover",

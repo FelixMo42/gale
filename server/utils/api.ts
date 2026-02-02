@@ -1,6 +1,6 @@
 import { Database } from "bun:sqlite";
 
-export const api = new Map<string, (r: Request) => string>()
+export const api = new Map<string, (r: Request) => JSX.Element>()
 const db = new Database("db.sqlite", { create: true })
 
 db.run(`
@@ -10,9 +10,9 @@ db.run(`
     )
 `)
 
-export function cb(func: (r: Request) => string | number) {
+export function cb(func: (r: Request) => JSX.Element) {
     const uuid = crypto.randomUUID()
-    api.set(uuid, (req) => String(func(req)))
+    api.set(uuid, func)
     return `/api/${uuid}`
 }
 

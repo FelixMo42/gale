@@ -1,7 +1,11 @@
 import { file } from "bun"
 import * as time from "./utils/time.ts"
-import { CalendarWidget, InboxWidget, AgendaWidget, StatusWidget } from "./widgets.tsx"
-import { api, get } from "./utils/api.ts"
+import { CalendarWidget, InboxWidget, AgendaWidget, HabitWidget } from "./widgets.tsx"
+import { api } from "./utils/api.ts"
+import type { Children } from "@kitajs/html"
+import { client } from "./inbox.tsx"
+
+const FS_PATH = "/Users/felixmoses/Documents/journal/"
 
 async function html(html: Promise<string> | string) {
     return new Response(await html, {
@@ -11,10 +15,30 @@ async function html(html: Promise<string> | string) {
     })
 }
 
-async function page(req: Request) {
+async function diary_page(req: Request) {
+    return page("diary", <>
+        <aside>
+            <CalendarWidget />
+            <InboxWidget />
+        </aside>
+        <main>
+            <div
+                class="editor"
+                href={`/fs/${get_path(req)}.md`}
+                contenteditable="true"
+            ></div>
+        </main>
+        <aside>
+            <AgendaWidget date={get_date_from_request(req)} />
+            <HabitWidget />
+        </aside>
+    </>)
+}
+
+async function page(title: string, body: string | Promise<string>) {
     return "<!DOCTYPE html>" + <html>
         <head>
-            <title>{get_path(req)}</title>
+            <title>{title}</title>
 
             <meta charset="UTF-8" />
 
@@ -24,23 +48,7 @@ async function page(req: Request) {
             <script src="/static/agenda.js"></script>
             <script src="/static/htmx.min.js"></script>
         </head>
-        <body>
-                <aside>
-                    <CalendarWidget />
-                    <InboxWidget />
-                </aside>
-                <main>
-                    <div
-                        class="editor"
-                        href={`/fs/${get_path(req)}.md`}
-                        contenteditable="true"
-                    ></div>
-                </main>
-                <aside>
-                    <AgendaWidget date={get_date_from_request(req)} />
-                    <StatusWidget />
-                </aside>
-        </body>
+        <body>{await body}</body>
     </html>
 }
 
@@ -51,8 +59,6 @@ function get_date_from_request(req: Request) {
 function get_path(req: Request, prefix: string = "") {
     return new URL(req.url).pathname.slice(1 + prefix.length)
 }
-
-const FS_PATH = "/Users/felixmoses/Documents/journal/"
 
 function get_title_from_path(path: string) {
     const timestamp = path.match(/\d\d\d\d-\d\d-\d\d/)![0]
@@ -65,6 +71,64 @@ function template(path: string) {
     if (path.startsWith("diary/"))
         return `# ${get_title_from_path(path)}\n\n`
     return ""
+}
+
+async function chat_page(req: Request) {
+    const id = req.url.split("/").at(-1)!
+
+    const messages = client.messages.list(id)
+
+    const blah = await messages
+
+    return page("chat", <>
+        <aside>
+            <CalendarWidget />
+            <InboxWidget />
+        </aside>
+        <main class="col pad h-100">
+            <div class="flex scroll col reverse">
+                {blah.items.map((message =>
+                    <div
+                        class="pad"
+                        style={{
+                            padding: "5px",
+                            backgroundColor: "#EEE",
+                            marginBottom: "5px",
+                            borderRadius: "5px",
+                            maxWidth: "100%",
+                            wordWrap: "break-word",
+                            whiteSpace: "pre-wrap",
+                        }}
+                    >{message.text}</div>
+                ))}
+            </div>
+            <div>
+                <input
+                    type="text"
+                    placeholder="Type a message..."
+                    class="pad"
+                    style={{
+                        border: "1px solid grey",
+                        borderRadius: "5px",
+                        display: "block",
+                        width: "100%",
+                    }}
+                />
+            </div>
+        </main>
+        <aside>
+            <article class="flex">
+                <label>Notes</label>
+                <div class="flex pad col">
+                    <div
+                        class="editor flex"
+                        href={`/fs/${get_path(req)}.md`}
+                        contenteditable="true"
+                    />
+                </div>
+            </article>
+        </aside>
+    </>)
 }
 
 Bun.serve({
@@ -80,16 +144,28 @@ Bun.serve({
                 return new Response(f)
             },
             POST: async (req) => {
-                const body = await req.text()
-                Bun.write(FS_PATH + get_path(req, "fs/"), body)
+                const f = file(FS_PATH + get_path(req, "fs/"))
+                f.write(await req.text())
                 return new Response("OK")
             }
         },
+        "/diary/*": req => html(diary_page(req)),
+        "/chat/*": req => html(chat_page(req)),
     },
     fetch(request) {
         const path = get_path(request) 
         if (path.startsWith("api/"))
             return html(api.get(path.split("/").at(-1)!)!(request))
-        return html(page(request))
+        return html(page(request.url.split("/").at(-1)!, <>
+            <aside></aside>
+            <main>
+                <div
+                    class="editor"
+                    href={`/fs/${get_path(request)}.md`}
+                    contenteditable="true"
+                ></div>
+            </main>
+            <aside></aside>
+        </>))
     }
 })

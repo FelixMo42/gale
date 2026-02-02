@@ -106,7 +106,7 @@ main .editor:last-child {
     font-weight: bold;
 }
 
-.editor a {
+a {
     color: darkcyan;
     cursor: pointer;
 }
@@ -328,4 +328,20 @@ dialog #results a:hover {
 
 .center {
     text-align: center;
+}
+
+.bb {
+    border-bottom: 1px solid lightgray;
+}
+
+.h-100 {
+    height: 100vh;
+}
+
+.row.reverse {
+    flex-direction: row-reverse;
+}
+
+.col.reverse {
+    flex-direction: column-reverse;
 }

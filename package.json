@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "dependencies": {
+    "@beeper/desktop-api": "^4.2.3",
     "@kitajs/html": "4.2.11"
   },
   "devDependencies": {
