@@ -65,7 +65,6 @@ export function AgendaWidget({ date = new Date() }) {
 }
 
 function habit_streak(name: string, date=new Date()) {
-    console.log(get<number>(`habit.${name}.${time.format_date_file(time.today(date))}`))
     return (
         get<number>(`habit.${name}.${time.format_date_file(time.today(date))}`) ??
         get<number>(`habit.${name}.${time.format_date_file(time.yesterday(date))}`) ??
@@ -75,14 +74,14 @@ function habit_streak(name: string, date=new Date()) {
 
 function habit_toggle(name: string) {
     return set(
-        `habit.${name}.${time.format_date_file(time.yesterday())}`,
+        `habit.${name}.${time.format_date_file(time.today())}`,
         habit_streak(name, time.yesterday()) + 1
     )
 }
 
-const click_yoga = cb(() => habit_toggle("yoga"))
-const click_grow = cb(() => habit_toggle("grow"))
-const click_live = cb(() => habit_toggle("live"))
+const click_yoga = cb(() => String(habit_toggle("yoga")))
+const click_grow = cb(() => String(habit_toggle("grow")))
+const click_live = cb(() => String(habit_toggle("live")))
 
 export function HabitWidget() {
     const style = (bg: string) => ({

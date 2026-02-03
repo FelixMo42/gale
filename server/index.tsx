@@ -4,6 +4,7 @@ import { CalendarWidget, InboxWidget, AgendaWidget, HabitWidget } from "./widget
 import { api } from "./utils/api.ts"
 import type { Children } from "@kitajs/html"
 import { client } from "./inbox.tsx"
+import type { Message } from "@beeper/desktop-api/resources"
 
 const FS_PATH = "/Users/felixmoses/Documents/journal/"
 
@@ -73,34 +74,47 @@ function template(path: string) {
     return ""
 }
 
+async function MessageView({ message }: { message: Message }) {
+    if (!message.text) return <></>
+
+    if (message.isSender) return <div
+        class="pad"
+        style={{
+            padding: "5px",
+            backgroundColor: "lightblue",
+            maxWidth: "100%",
+            wordWrap: "break-word",
+            whiteSpace: "pre-wrap",
+        }}
+    >{message.text}</div>
+
+    return <div
+        class="pad"
+        style={{
+            padding: "5px",
+            maxWidth: "100%",
+            wordWrap: "break-word",
+            backgroundColor: "#EEE",
+            whiteSpace: "pre-wrap",
+        }}
+    >{message.text}</div>
+}
+
 async function chat_page(req: Request) {
     const id = req.url.split("/").at(-1)!
 
-    const messages = client.messages.list(id)
-
-    const blah = await messages
+    const messages = await client.messages.list(id)
 
     return page("chat", <>
         <aside>
             <CalendarWidget />
             <InboxWidget />
         </aside>
-        <main class="col pad h-100">
-            <div class="flex scroll col reverse">
-                {blah.items.map((message =>
-                    <div
-                        class="pad"
-                        style={{
-                            padding: "5px",
-                            backgroundColor: "#EEE",
-                            marginBottom: "5px",
-                            borderRadius: "5px",
-                            maxWidth: "100%",
-                            wordWrap: "break-word",
-                            whiteSpace: "pre-wrap",
-                        }}
-                    >{message.text}</div>
-                ))}
+        <main class="col h-100 pad">
+            <div class="flex scroll col reverse" style={{
+                padding: "0px 5px",
+            }}>
+                {messages.items.map((message => <MessageView message={message} />))}
             </div>
             <div>
                 <input
@@ -117,7 +131,7 @@ async function chat_page(req: Request) {
             </div>
         </main>
         <aside>
-            <article class="flex">
+            <article class="flex col">
                 <label>Notes</label>
                 <div class="flex pad col">
                     <div

@@ -40,8 +40,9 @@ export function format_date_file(date: Date) {
 }
 
 export function yesterday(date: Date=new Date()) {
-    date.setDate(date.getDate() - 1)
-    return date
+    const yesterday = new Date(date)
+    yesterday.setDate(date.getDate() - 1)
+    return yesterday
 }
 
 export function today(date: Date=new Date()) {
