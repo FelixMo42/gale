@@ -2,7 +2,6 @@ import { file } from "bun"
 import * as time from "./utils/time.ts"
 import { CalendarWidget, InboxWidget, AgendaWidget, HabitWidget } from "./widgets.tsx"
 import { api } from "./utils/api.ts"
-import type { Children } from "@kitajs/html"
 import { client } from "./inbox.tsx"
 import type { Message } from "@beeper/desktop-api/resources"
 
@@ -148,6 +147,7 @@ async function chat_page(req: Request) {
 Bun.serve({
     port: 8042,
     routes: {
+        "/": (req) => Response.redirect(`/diary/${time.format_date_file(new Date())}`),
         "/static/*": (req) => new Response(file(get_path(req))),
         "/fs/*": {
             GET: async (req) => {

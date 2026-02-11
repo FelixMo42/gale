@@ -12,13 +12,13 @@ interface InboxItem {
 export const get_inbox = cb(async () => {
     const inbox: InboxItem[] = []
 
-    for await (const chat of await client.chats.search({
-        lastActivityAfter: time.yesterday().toISOString(),
-        inbox: "primary",
-    })) inbox.push({
-        title: chat.title!,
-        url: `/chat/${chat.id}`,
-    })
+    // for await (const chat of await client.chats.search({
+    //     lastActivityAfter: time.yesterday().toISOString(),
+    //     inbox: "primary",
+    // })) inbox.push({
+    //     title: chat.title!,
+    //     url: `/chat/${chat.id}`,
+    // })
 
     return <>
         {inbox.map(item =>

@@ -62,7 +62,7 @@ function get_event_bg(name) {
     } else if (name.startsWith("work")) {
         return bg("work.png", "rgba(255, 255, 255, 0.5)")
 
-    } else if (name.includes("pse1")) {
+    } else if (name.includes("pse1") || name.includes("ps")) {
         return bg("protection_civile.png", "rgba(255, 255, 255, 0.5)")
 
     } else if (name.includes("lunch") || name.includes("dinner")) {
