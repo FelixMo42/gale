@@ -2,7 +2,7 @@ import { file } from "bun"
 import * as time from "./utils/time.ts"
 import { CalendarWidget, InboxWidget, AgendaWidget, HabitWidget } from "./widgets.tsx"
 import { api } from "./utils/api.ts"
-import { client } from "./inbox.tsx"
+import { search_results } from "./search.tsx"
 import type { Message } from "@beeper/desktop-api/resources"
 
 const FS_PATH = "/Users/felixmoses/Documents/journal/"
@@ -46,9 +46,14 @@ async function page(title: string, body: string | Promise<string>) {
 
             <script src="/static/editor.js"></script>
             <script src="/static/agenda.js"></script>
+            <script src="/static/modal.js"></script>
             <script src="/static/htmx.min.js"></script>
         </head>
         <body>{await body}</body>
+        <dialog>
+            <input></input>
+            <div id="results"></div>
+        </dialog>
     </html>
 }
 
@@ -102,7 +107,7 @@ async function MessageView({ message }: { message: Message }) {
 async function chat_page(req: Request) {
     const id = req.url.split("/").at(-1)!
 
-    const messages = await client.messages.list(id)
+    // const messages = await client.messages.list(id)
 
     return page("chat", <>
         <aside>
@@ -113,7 +118,7 @@ async function chat_page(req: Request) {
             <div class="flex scroll col reverse" style={{
                 padding: "0px 5px",
             }}>
-                {messages.items.map((message => <MessageView message={message} />))}
+                {/* {messages.items.map((message => <MessageView message={message} />))} */}
             </div>
             <div>
                 <input
@@ -144,6 +149,8 @@ async function chat_page(req: Request) {
     </>)
 }
 
+
+
 Bun.serve({
     port: 8042,
     routes: {
@@ -165,6 +172,7 @@ Bun.serve({
         },
         "/diary/*": req => html(diary_page(req)),
         "/chat/*": req => html(chat_page(req)),
+        "/api/search": (req) => html(search_results(new URL(req.url).searchParams.get("q")!))
     },
     fetch(request) {
         const path = get_path(request) 

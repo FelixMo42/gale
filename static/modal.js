@@ -53,6 +53,7 @@ function moveInList(mod) {
     let focus = items.indexOf(document.activeElement)
     if (focus === -1) { focus = 0 }
     const index = Math.min(Math.max(focus + mod, 0), items.length - 1)
+    console.log(focus, mod, '=', index)
     items[index].focus()
 }
 

@@ -2,7 +2,7 @@ import { cb } from "./utils/api";
 import * as time from "./utils/time.ts"
 import BeeperDesktop from '@beeper/desktop-api'
 
-export const client = new BeeperDesktop()
+// export const client = new BeeperDesktop()
 
 interface InboxItem {
     title: string,
