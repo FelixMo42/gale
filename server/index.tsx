@@ -4,6 +4,7 @@ import { CalendarWidget, InboxWidget, AgendaWidget, HabitWidget } from "./widget
 import { api } from "./utils/api.ts"
 import { search_results } from "./search.tsx"
 import type { Message } from "@beeper/desktop-api/resources"
+import { param } from "./utils/misc.ts"
 
 const FS_PATH = "/Users/felixmoses/Documents/journal/"
 
@@ -18,7 +19,7 @@ async function html(html: Promise<string> | string) {
 async function diary_page(req: Request) {
     return page("diary", <>
         <aside>
-            <CalendarWidget />
+            <CalendarWidget month={param(req, "m")} />
             <InboxWidget />
         </aside>
         <main>
@@ -104,53 +105,6 @@ async function MessageView({ message }: { message: Message }) {
     >{message.text}</div>
 }
 
-async function chat_page(req: Request) {
-    const id = req.url.split("/").at(-1)!
-
-    // const messages = await client.messages.list(id)
-
-    return page("chat", <>
-        <aside>
-            <CalendarWidget />
-            <InboxWidget />
-        </aside>
-        <main class="col h-100 pad">
-            <div class="flex scroll col reverse" style={{
-                padding: "0px 5px",
-            }}>
-                {/* {messages.items.map((message => <MessageView message={message} />))} */}
-            </div>
-            <div>
-                <input
-                    type="text"
-                    placeholder="Type a message..."
-                    class="pad"
-                    style={{
-                        border: "1px solid grey",
-                        borderRadius: "5px",
-                        display: "block",
-                        width: "100%",
-                    }}
-                />
-            </div>
-        </main>
-        <aside>
-            <article class="flex col">
-                <label>Notes</label>
-                <div class="flex pad col">
-                    <div
-                        class="editor flex"
-                        href={`/fs/${get_path(req)}.md`}
-                        contenteditable="true"
-                    />
-                </div>
-            </article>
-        </aside>
-    </>)
-}
-
-
-
 Bun.serve({
     port: 8042,
     routes: {
@@ -171,8 +125,7 @@ Bun.serve({
             }
         },
         "/diary/*": req => html(diary_page(req)),
-        "/chat/*": req => html(chat_page(req)),
-        "/api/search": (req) => html(search_results(new URL(req.url).searchParams.get("q")!))
+        "/api/search": (req) => html(search_results(param(req, "q")!))
     },
     fetch(request) {
         const path = get_path(request) 

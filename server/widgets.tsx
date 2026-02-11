@@ -3,24 +3,22 @@ import { range } from "./utils/math.ts"
 import { cb, get, set } from "./utils/api.ts"
 import { get_inbox } from "./inbox.tsx"
 
-export function CalendarWidget({
-    year = 2026,
-    month = 2,
-}) {
-    const month_date = new Date(year, month - 1, 1)
+export function CalendarWidget({ month=`2026-2` }) {
+    const [ y, m ] = month.split("-").map(Number) as [ number, number ]
+    const month_date = new Date(y, m - 1, 1)
     const month_offset = 1 - time.get_day(month_date)
     const month_name = month_date.toLocaleString('en-US', { month: 'long' })
 
     return <article>
         <label>
-            <a>{"<"}</a>
-            <div class="flex">{month_name} {year}</div>
-            <a>{">"}</a>
+            <a href={`?m=${y}-${m-1}`}>{"<"}</a>
+            <div class="flex">{month_name} {y}</div>
+            <a href={`?m=${y}-${m+1}`}>{">"}</a>
         </label>
         {range(6).map(week => <div class="row">
             {range(7).map(day => {
                 const days_since_start = week * 7 + day + month_offset
-                const date = new Date(year, month - 1, days_since_start)
+                const date = new Date(y, m - 1, days_since_start)
                 return <a
                     class={`day ${get_calendar_day_class(date)}`}
                     href={`/diary/${time.format_date_file(date)}`}
