@@ -1,9 +1,8 @@
 import { file } from "bun"
 import * as time from "./utils/time.ts"
-import { CalendarWidget, InboxWidget, AgendaWidget, HabitWidget } from "./widgets.tsx"
+import { CalendarWidget, ProjectsWidget, AgendaWidget, HabitWidget } from "./widgets.tsx"
 import { api } from "./utils/api.ts"
 import { search_results } from "./search.tsx"
-import type { Message } from "@beeper/desktop-api/resources"
 import { param } from "./utils/misc.ts"
 
 const FS_PATH = "/Users/felixmoses/Documents/journal/"
@@ -20,7 +19,7 @@ async function diary_page(req: Request) {
     return page("diary", <>
         <aside>
             <CalendarWidget month={param(req, "m")} />
-            <InboxWidget />
+            <ProjectsWidget />
         </aside>
         <main>
             <div
@@ -79,32 +78,6 @@ function template(path: string) {
     return ""
 }
 
-async function MessageView({ message }: { message: Message }) {
-    if (!message.text) return <></>
-
-    if (message.isSender) return <div
-        class="pad"
-        style={{
-            padding: "5px",
-            backgroundColor: "lightblue",
-            maxWidth: "100%",
-            wordWrap: "break-word",
-            whiteSpace: "pre-wrap",
-        }}
-    >{message.text}</div>
-
-    return <div
-        class="pad"
-        style={{
-            padding: "5px",
-            maxWidth: "100%",
-            wordWrap: "break-word",
-            backgroundColor: "#EEE",
-            whiteSpace: "pre-wrap",
-        }}
-    >{message.text}</div>
-}
-
 Bun.serve({
     port: 8042,
     routes: {
@@ -127,20 +100,25 @@ Bun.serve({
         "/diary/*": req => html(diary_page(req)),
         "/api/search": (req) => html(search_results(param(req, "q")!))
     },
-    fetch(request) {
-        const path = get_path(request) 
+    fetch(req) {
+        const path = get_path(req) 
         if (path.startsWith("api/"))
-            return html(api.get(path.split("/").at(-1)!)!(request))
-        return html(page(request.url.split("/").at(-1)!, <>
-            <aside></aside>
+            return html(api.get(path.split("/").at(-1)!)!(req))
+        return html(page(req.url.split("/").at(-1)!, <>
+            <aside>
+                <CalendarWidget month={param(req, "m")} />
+                <ProjectsWidget />
+            </aside>
             <main>
                 <div
                     class="editor"
-                    href={`/fs/${get_path(request)}.md`}
+                    href={`/fs/${get_path(req)}.md`}
                     contenteditable="true"
                 ></div>
             </main>
-            <aside></aside>
+            <aside>
+                <article class="flex"></article>
+            </aside>
         </>))
     }
 })

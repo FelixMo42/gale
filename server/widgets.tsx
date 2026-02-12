@@ -1,7 +1,6 @@
 import * as time from "./utils/time.ts"
 import { range } from "./utils/math.ts"
 import { cb, get, set } from "./utils/api.ts"
-import { get_inbox } from "./inbox.tsx"
 
 export function CalendarWidget({ month="24314" }) {
     const m = Number(month) % 12
@@ -38,8 +37,50 @@ export function CalendarWidget({ month="24314" }) {
     }
 }
 
-export function InboxWidget() {
-    return <article class="flex scroll" hx-get={get_inbox} hx-trigger="load">
+export function ProjectsWidget() {
+    const projects = [
+        {
+            name: "Entrelacs",
+            url: "/project/Entrelacs",
+        },
+        {
+            name: "Metaculus",
+            url: "/project/Metaculus",
+        },
+        {
+            name: "EA42",
+            url: "/project/ea42",
+        },
+        {
+            name: "42",
+            url: "/project/42",
+        },
+        {
+            name: "Pause IA",
+            url: "/project/pauseia",
+        },
+        {
+            name: "AISC",
+            url: "/project/aisc",
+        },
+        {
+            name: "Protection Civile",
+            url: "/project/protec",
+        },
+        {
+            name: "Gale",
+            url: "/project/gale",
+        },
+        {
+            name: "Untitled Pedent Game",
+            url: "/project/pedent",
+        }
+    ]
+
+    return <article class="flex col scroll" hx-trigger="load">
+        {projects.map(({ name, url }) =>
+            <a href={url} class="pad bb">{ name }</a>
+        )}
     </article>
 }
 
