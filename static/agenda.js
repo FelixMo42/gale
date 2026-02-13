@@ -9,8 +9,35 @@ function attach_agenda(agenda) {
         return [area, text]
     }
 
+    // add the cover if it is today
+    const startOfDay = new Date()
+    startOfDay.setHours(8, 0, 0, 0)
+    const today = `${startOfDay.getFullYear()}-${String(startOfDay.getMonth() + 1).padStart(2, "0")}-${String(startOfDay.getDate()).padStart(2, "0")}`
+    if (agenda.dataset.date === today) {
+        const now = new Date()
+        const percentOfDate = ((now - startOfDay) / 1000) / hourToSeconds(24 - 8)
+        const cover = document.createElement("div")
+        cover.id = "cover"
+        agenda.parentNode.appendChild(cover)
+        cover.style.position = "absolute"
+        cover.style.height = `${percentOfDate * 100}%`
+        cover.style.width = "100%"
+        cover.style.background = "rgba(150, 150, 150, 0.25)"
+        cover.style.borderBottom = "1px solid grey"
+        cover.style.zIndex = "100"
+        setInterval(() => {
+            const now = new Date()
+            const percentOfDate = ((now - startOfDay) / 1000 - hourToSeconds(8)) / hourToSeconds(24 - 8 - 1)
+            cover.style.top = `${percentOfDate * 100}%`
+        }, 300000)
+    }
+
     agenda.postedit = () => style_agenda(agenda)
     agenda.onload = () => style_agenda(agenda)
+}
+
+function hourToSeconds(hour) {
+    return hour * 60 * 60
 }
 
 function style_agenda(agenda) {
@@ -21,14 +48,14 @@ function style_agenda(agenda) {
         const name = line.innerText.trim()
         if (name) {
             const bg = document.createElement("div")
-        
+
             bg.className = "agenga-bg"
 
             bg.style.position = "absolute"
-            bg.style.top    = `0px`
+            bg.style.top = `0px`
             bg.style.height = `${100 * get_event_length(line)}%`
-            bg.style.left   = `0px`
-            bg.style.right  = `0px`
+            bg.style.left = `0px`
+            bg.style.right = `0px`
 
             bg.style.zIndex = "-1"
 
@@ -41,7 +68,7 @@ function style_agenda(agenda) {
     }
 }
 
-function get_event_length(line, length=1) {
+function get_event_length(line, length = 1) {
     if (!line.nextSibling) return 1
     if (line.nextSibling.innerText.trim() === "---") return length + 1
     if (line.nextSibling.innerText.trim() === "") return get_event_length(line.nextSibling, length + 1)
@@ -49,7 +76,6 @@ function get_event_length(line, length=1) {
 }
 
 function get_event_bg(name) {
-
     if (["wake up"].includes(name)) {
         return "url(/fs/.hidden/images/sun.png) no-repeat center / cover"
     } else if (["go to sleep"].includes(name)) {

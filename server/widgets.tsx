@@ -2,7 +2,7 @@ import * as time from "./utils/time.ts"
 import { range } from "./utils/math.ts"
 import { cb, get, set } from "./utils/api.ts"
 
-export function CalendarWidget({ month="24314" }) {
+export function CalendarWidget({ month = "24314" }) {
     const m = Number(month) % 12
     const y = (Number(month) - m) / 12
     const month_date = new Date(y, m - 1, 1)
@@ -100,14 +100,14 @@ export function ProjectsWidget() {
                 background: bg,
                 backgroundColor: "rgba(255, 255, 255, 0.5)",
                 color: "black"
-            }}>{ name }</a>
+            }}>{name}</a>
         )}
     </article>
 }
 
 export function AgendaWidget({ date = new Date() }) {
     const start_h = 8
-    const end_h   = 24
+    const end_h = 24
 
     return <article class="flex col">
         <div class="flex col relative">
@@ -115,6 +115,7 @@ export function AgendaWidget({ date = new Date() }) {
                 class="editor agenda"
                 contenteditable="true"
                 href={`/fs/.hidden/agenda/${time.format_date_file(date)}.md`}
+                data-date={time.format_date_file(date)}
             ></div>
             {range(end_h - start_h, start_h).map(hour =>
                 <div class="flex row agenda-row">
@@ -125,7 +126,7 @@ export function AgendaWidget({ date = new Date() }) {
     </article>
 }
 
-function habit_streak(name: string, date=new Date()) {
+function habit_streak(name: string, date = new Date()) {
     return (
         get<number>(`habit.${name}.${time.format_date_file(time.today(date))}`) ??
         get<number>(`habit.${name}.${time.format_date_file(time.yesterday(date))}`) ??
@@ -156,22 +157,22 @@ export function HabitWidget() {
     } as JSX.CSSProperties)
 
     return <article>
-            <div class="flex row">
-                <a
-                    class="flex"
-                    style={style("heart.jpg")}
-                    hx-get={click_yoga}
-                >{habit_streak("yoga")}</a>
-                <div
-                    class="flex"
-                    style={style("garden.png")}
-                    hx-get={click_grow}
-                >{habit_streak("grow")}</div>
-                <div
-                    class="flex"
-                    style={style("water.png")}
-                    hx-get={click_live}
-                >{habit_streak("live")}</div>
-            </div>
+        <div class="flex row">
+            <a
+                class="flex"
+                style={style("heart.jpg")}
+                hx-get={click_yoga}
+            >{habit_streak("yoga")}</a>
+            <div
+                class="flex"
+                style={style("garden.png")}
+                hx-get={click_grow}
+            >{habit_streak("grow")}</div>
+            <div
+                class="flex"
+                style={style("water.png")}
+                hx-get={click_live}
+            >{habit_streak("live")}</div>
+        </div>
     </article>
 }
