@@ -37,49 +37,70 @@ export function CalendarWidget({ month="24314" }) {
     }
 }
 
+function bg(image: string, color?: string): string {
+    if (!color) {
+        return `url(/fs/.hidden/images/${image}) no-repeat center / cover`
+    } else {
+        return `linear-gradient(${color}, ${color}), ${bg(image)}`
+    }
+}
+
 export function ProjectsWidget() {
     const projects = [
         {
             name: "Entrelacs",
             url: "/project/Entrelacs",
+            bg: bg("entrelacs.png")
         },
         {
             name: "Metaculus",
             url: "/project/Metaculus",
+            bg: bg("metaculus.png")
         },
         {
             name: "EA42",
             url: "/project/ea42",
+            bg: bg("ea42.png"),
         },
         {
             name: "42",
             url: "/project/42",
+            bg: bg("e42.png", "rgba(255, 255, 255, 0.6)"),
         },
         {
             name: "Pause IA",
             url: "/project/pauseia",
+            bg: bg("pauseia.png"),
         },
         {
             name: "AISC",
             url: "/project/aisc",
+            bg: bg("aisc.png"),
         },
         {
             name: "Protection Civile",
             url: "/project/protec",
+            bg: bg("protection_civile.png", "rgba(255, 255, 255, 0.5)")
         },
         {
             name: "Gale",
             url: "/project/gale",
+            bg: bg("gale.png"),
         },
         {
             name: "Untitled Pedent Game",
             url: "/project/pedent",
+            bg: bg("eli.png", "rgba(100, 100, 200, 0.5)")
         }
     ]
 
     return <article class="flex col scroll" hx-trigger="load">
-        {projects.map(({ name, url }) =>
-            <a href={url} class="pad bb">{ name }</a>
+        {projects.map(({ name, url, bg }) =>
+            <a href={url} class="pad bb" style={{
+                background: bg,
+                backgroundColor: "rgba(255, 255, 255, 0.5)",
+                color: "black"
+            }}>{ name }</a>
         )}
     </article>
 }

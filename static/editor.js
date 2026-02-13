@@ -133,7 +133,6 @@ function line_to_html(line) {
 
     return match_replace(line, [
         [/\*[^\*]*\*/g, g => `<i>${g}</i>`],
-        [/\_[^\_]*\_/g, g => `<i>${g}</i>`],
 
         [/\*\*[^\*]*\*\*/g, g => `<b>${g}</b>`],
         [/\_\_[^\_]*\_\_/g, g => `<b>${g}</b>`],
@@ -152,6 +151,7 @@ function line_to_html(line) {
         [/^\s*[\d]+\.\s+/g, g => `<span class="indent">${g}</span>`],
 
         [/\[\[[^\]]+\]\]/g, g => `<a href="/${format_link(g)}">${g}</a>`],
+        [/[a-z]+:\/\/[-_!:a-zA-Z0-9@%.\+~#=\/]{2,256}/g, g => `<a href="${g}">${g}</a>`],
     ])
 }
 
