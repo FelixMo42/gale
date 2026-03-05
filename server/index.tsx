@@ -3,7 +3,7 @@ import * as time from "./utils/time.ts"
 import { CalendarWidget, ProjectsWidget, AgendaWidget, HabitWidget } from "./widgets.tsx"
 import { api } from "./utils/api.ts"
 import { search_results } from "./search.tsx"
-import { param } from "./utils/misc.ts"
+import { param, template } from "./utils/misc.ts"
 import { readdir } from "fs/promises"
 import { page } from "./utils/page.tsx"
 import { agenda_page } from "./agenda_page.tsx"
@@ -40,19 +40,6 @@ async function diary_page(req: Request) {
 
 function get_path(req: Request, prefix: string = "") {
     return new URL(req.url).pathname.slice(1 + prefix.length)
-}
-
-function get_title_from_path(path: string) {
-    const timestamp = path.match(/\d\d\d\d-\d\d-\d\d/)![0]
-    return time.format_date_title(new Date(timestamp))
-}
-
-function template(path: string) {
-    if (path.startsWith(".hidden/agenda/"))
-        return `wake up\n---\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ngo to sleep\n---`
-    if (path.startsWith("diary/"))
-        return `# ${get_title_from_path(path)}\n\n`
-    return ""
 }
 
 Bun.serve({
