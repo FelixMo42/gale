@@ -4,6 +4,9 @@ import { CalendarWidget, ProjectsWidget, AgendaWidget, HabitWidget } from "./wid
 import { api } from "./utils/api.ts"
 import { search_results } from "./search.tsx"
 import { param } from "./utils/misc.ts"
+import { readdir } from "fs/promises"
+import { page } from "./utils/page.tsx"
+import { agenda_page } from "./agenda_page.tsx"
 
 const FS_PATH = "/Users/felixmoses/Documents/journal/"
 
@@ -29,36 +32,10 @@ async function diary_page(req: Request) {
             ></div>
         </main>
         <aside>
-            <AgendaWidget date={get_date_from_request(req)} />
+            <AgendaWidget date={time.get_date_from_request(req)} />
             <HabitWidget />
         </aside>
     </>)
-}
-
-async function page(title: string, body: string | Promise<string>) {
-    return "<!DOCTYPE html>" + <html>
-        <head>
-            <title>{title}</title>
-
-            <meta charset="UTF-8" />
-
-            <link rel="stylesheet" href="/static/editor.css" />
-
-            <script src="/static/editor.js"></script>
-            <script src="/static/agenda.js"></script>
-            <script src="/static/modal.js"></script>
-            <script src="/static/htmx.min.js"></script>
-        </head>
-        <body>{await body}</body>
-        <dialog>
-            <input></input>
-            <div id="results"></div>
-        </dialog>
-    </html>
-}
-
-function get_date_from_request(req: Request) {
-    return new Date(req.url.match(/\d\d\d\d-\d\d-\d\d/)![0])
 }
 
 function get_path(req: Request, prefix: string = "") {
@@ -97,10 +74,11 @@ Bun.serve({
                 return new Response("OK")
             }
         },
+        "/agenda": req => html(agenda_page(req)),
         "/diary/*": req => html(diary_page(req)),
         "/api/search": (req) => html(search_results(param(req, "q")!))
     },
-    fetch(req) {
+    async fetch(req) {
         const path = get_path(req) 
         if (path.startsWith("api/"))
             return html(api.get(path.split("/").at(-1)!)!(req))
@@ -117,8 +95,36 @@ Bun.serve({
                 ></div>
             </main>
             <aside>
-                <article class="flex"></article>
+                <article class="flex">
+                    <label class="center">Linked Refrences</label>
+                    <div>{await refs()}</div>
+                </article>
             </aside>
         </>))
     }
 })
+
+async function refs() {
+    const lines = await grep("gale")
+    return lines.map(line => <div class="bb pad dot">{line}</div>)
+}
+
+async function grep(search: string) {
+    const all = await readdir("/Users/felixmoses/Documents/journal", { recursive: true })
+
+    const p = await Promise.all(all
+        .filter(file => !file.startsWith("."))
+        .filter(file => file.endsWith(".md"))
+        .map(file => Bun.file(`/Users/felixmoses/Documents/journal/${file}`).text())
+    )
+
+    const refs = [] as string[]
+
+    for (const f of p)
+        refs.push(...f
+            .split("\n")
+            .filter(line => line.includes(search))
+        )
+
+    return refs
+}

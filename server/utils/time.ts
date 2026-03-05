@@ -101,3 +101,7 @@ export function get_day(date: Date) {
     const day = date.getDay()
     return day === 0 ? 6 : day - 1
 }
+
+export function get_date_from_request(req: Request) {
+    return new Date(req.url.match(/\d\d\d\d-\d\d-\d\d/)![0])
+}

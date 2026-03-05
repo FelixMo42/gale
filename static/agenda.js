@@ -25,10 +25,11 @@ function attach_agenda(agenda) {
         cover.style.background = "rgba(150, 150, 150, 0.25)"
         cover.style.borderBottom = "1px solid grey"
         cover.style.zIndex = "100"
+        cover.style.pointerEvents = "none"
         setInterval(() => {
             const now = new Date()
-            const percentOfDate = ((now - startOfDay) / 1000 - hourToSeconds(8)) / hourToSeconds(24 - 8 - 1)
-            cover.style.top = `${percentOfDate * 100}%`
+            const percentOfDate = ((now - startOfDay) / 1000) / hourToSeconds(24 - 8)
+            cover.style.height = `${percentOfDate * 100}%`
         }, 300000)
     }
 
@@ -82,7 +83,10 @@ function get_event_bg(name) {
         return "url(/fs/.hidden/images/night.png) no-repeat center / cover"
     } else if (name.includes("train") || name.includes("drive") || name.includes("bus")) {
         return "url(/fs/.hidden/images/rail.png) repeat-y right center / 50%"
-
+    } else if (name.includes("writers block")) {
+        return bg("books.png", "rgba(255, 255, 0, 0.5)")
+    } else if (name.includes("exercise")) {
+        return bg("heart.jpg", "rgba(255, 255, 255, 0.5)")
     } else if (name.includes("42")) {
         return bg("e42.png", "rgba(255, 255, 255, 0.5)")
     } else if (name.startsWith("work")) {

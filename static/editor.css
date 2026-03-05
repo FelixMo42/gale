@@ -35,6 +35,11 @@ main {
     width: 800px;
 }
 
+main.full {
+    width: 100%;
+    height: 100vh;
+}
+
 aside {
     flex: 1;
     padding: 10px;
@@ -46,14 +51,14 @@ aside {
     height: 100vh;
 }
 
-aside article {
+article {
     border-radius: var(--border-radius);
     opacity: 75%;
     border: 1px solid lightgrey;
     overflow: hidden;
 }
 
-aside article label {
+article label {
     text-align: center;
     display: block;
     padding: 5px;
@@ -63,11 +68,11 @@ aside article label {
     flex-direction: row;
 }
 
-aside article.editor {
+article.editor {
     padding: 10px;
 }
 
-aside article.editor div.h1:first-child {
+article.editor div.h1:first-child {
     font-size: inherit;
     display: block;
     font-weight: bold;
@@ -188,12 +193,7 @@ a {
 }
 
 .agenda.editor {
-    position: absolute;
-
-    right: 0px;
-    top: 0px;
-    bottom: 0px;
-    left: 33px;
+    position: relative;
 
     display: flex;
     flex-direction: column;
@@ -219,6 +219,20 @@ a {
     padding-right: 3px;
     text-align: right;
     border-right: 1px solid gray;
+}
+
+article:has(.agenda-col) {
+    padding-left: 33px;
+}
+
+.agenda-col {
+    position: absolute;
+    right: 0px;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    display: flex;
+    flex-direction: column;
 }
 
 .agenda-row:not(:last-child) {
@@ -309,6 +323,10 @@ dialog #results a:hover {
     padding: 10px;
 }
 
+.gap {
+    gap: 10px;
+}
+
 .pad-0 {
     padding: 0px !important;
     gap: 0px !important;
@@ -344,4 +362,13 @@ dialog #results a:hover {
 
 .col.reverse {
     flex-direction: column-reverse;
+}
+
+.dot {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.agenda.editor:not(:last-child) {
+    border-right: 1px solid gray;
 }
