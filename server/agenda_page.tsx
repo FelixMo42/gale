@@ -1,26 +1,24 @@
 import { page } from "./utils/page"
-import { AgendaWidget, HabitWidget } from "./widgets"
 import * as time from "./utils/time.ts"
 import { range } from "./utils/math.ts"
+import { getAgendaItems } from "./utils/events.ts"
 
 export async function agenda_page(req: Request) {
     return page("agenda", <>
         <main class="full col pad gap">
-            <div class="row flex gap">
-                <WeekWidget date={new Date()} />
-            </div>
-            <HabitWidget />
+            <WeekWidget week={new Date()} />
+            <TimetrackerWidget week={new Date()}  />
         </main>
     </>)
 }
 
-export function WeekWidget({ date = new Date() }) {
+export function WeekWidget({ week = new Date() }) {
     const start_h = 8
     const end_h = 24
 
-    const start = time.get_start_of_week(date)
+    const start = time.get_start_of_week(week)
 
-    return <article class="flex col relative">
+    return <article class="col relative">
         <div class="col agenda-col">
             {range(end_h - start_h, start_h).map(hour =>
                 <div class="flex row agenda-row">
@@ -29,7 +27,7 @@ export function WeekWidget({ date = new Date() }) {
             )}
         </div>
 
-        <div class="row">
+        <div class="row" style={{ maxHeight: "100%" }}>
             {range(7).map(day => time.add_days(start, day)).map(date =>
                 <div
                     class="editor agenda flex"
@@ -39,5 +37,39 @@ export function WeekWidget({ date = new Date() }) {
                 ></div>
             )}
         </div>
+    </article>
+}
+
+export async function TimetrackerWidget({ week = new Date() }) {
+    const start = time.get_start_of_week(week)
+
+    const events = (await Promise.all(range(7)
+        .map(day => time.add_days(start, day))
+        .map(getAgendaItems)
+    )).flat()
+
+    const timespent = new Map<string, number>();
+
+    for (const event of events) {
+        timespent.set(
+            event.type,
+            (timespent.get(event.type) ?? 0) + event.span
+        )
+    }
+
+    timespent.delete("life")
+    timespent.delete("misc")
+
+    const times = [...timespent.entries()].sort((a, b) => b[1] - a[1])
+
+    return <article class="row scroll">
+        {times.map(([name, time]) => 
+            <div style={{
+                flex: time,
+                textWrap: "nowrap",
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+            }} class="br pad">{name} ({time}h)</div>
+        )}
     </article>
 }

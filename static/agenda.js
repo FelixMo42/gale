@@ -89,7 +89,7 @@ function get_event_bg(name) {
         return bg("heart.jpg", "rgba(255, 255, 255, 0.5)")
     } else if (name.includes("42")) {
         return bg("e42.png", "rgba(255, 255, 255, 0.5)")
-    } else if (name.startsWith("work")) {
+    } else if (name.includes("work")) {
         return bg("work.png", "rgba(255, 255, 255, 0.5)")
 
     } else if (name.includes("pse1") || name.includes("pc")) {
