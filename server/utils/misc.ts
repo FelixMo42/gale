@@ -25,6 +25,8 @@ export async function read(path: string) {
 }
 
 export function open(path: string) {
+    if (!path.startsWith("/"))
+        path = "/" + path
     const full = "/Users/felixmoses/Documents/journal" + path
     return Bun.file(full)
 }

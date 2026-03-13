@@ -3,16 +3,13 @@ import * as time from "./utils/time.ts"
 import { CalendarWidget, ProjectsWidget } from "./widgets.tsx"
 import { api } from "./utils/api.ts"
 import { search_results } from "./search.tsx"
-import { get_path, param, template } from "./utils/misc.ts"
-import { readdir } from "fs/promises"
+import { get_path, open, param, template } from "./utils/misc.ts"
 import { html, page, PAGES } from "./utils/page.tsx"
 
 // load in pages
 import "./pages/agenda_page.tsx"
 import "./pages/feed_page.tsx"
 import "./pages/diary_page.tsx"
-
-const FS_PATH = "/Users/felixmoses/Documents/journal/"
 
 Bun.serve({
     port: 8042,
@@ -23,13 +20,13 @@ Bun.serve({
         "/fs/*": {
             GET: async (req) => {
                 const path = get_path(req, "fs/")
-                const f = file(FS_PATH + path)
+                const f = open(path)
                 if (!await f.exists())
                     return new Response(template(path))
                 return new Response(f)
             },
             POST: async (req) => {
-                const f = file(FS_PATH + get_path(req, "fs/"))
+                const f = open(get_path(req, "fs/"))
                 f.write(await req.text())
                 return new Response("OK")
             }
@@ -55,34 +52,33 @@ Bun.serve({
             <aside>
                 <article class="flex">
                     <label class="center">Linked Refrences</label>
-                    <div>{await refs()}</div>
                 </article>
             </aside>
         </>))
     }
 })
 
-async function refs() {
-    const lines = await grep("gale")
-    return lines.map(line => <div class="bb pad">{line}</div>)
-}
+// async function refs() {
+//     const lines = await grep("gale")
+//     return lines.map(line => <div class="bb pad">{line}</div>)
+// }
 
-async function grep(search: string) {
-    const all = await readdir("/Users/felixmoses/Documents/journal", { recursive: true })
+// async function grep(search: string) {
+//     const all = await readdir("/Users/felixmoses/Documents/journal", { recursive: true })
 
-    const p = await Promise.all(all
-        .filter(file => !file.startsWith("."))
-        .filter(file => file.endsWith(".md"))
-        .map(file => Bun.file(`/Users/felixmoses/Documents/journal/${file}`).text())
-    )
+//     const p = await Promise.all(all
+//         .filter(file => !file.startsWith("."))
+//         .filter(file => file.endsWith(".md"))
+//         .map(file => Bun.file(`/Users/felixmoses/Documents/journal/${file}`).text())
+//     )
 
-    const refs = [] as string[]
+//     const refs = [] as string[]
 
-    for (const f of p)
-        refs.push(...f
-            .split("\n")
-            .filter(line => line.includes(search))
-        )
+//     for (const f of p)
+//         refs.push(...f
+//             .split("\n")
+//             .filter(line => line.includes(search))
+//         )
 
-    return refs
-}
+//     return refs
+// }
