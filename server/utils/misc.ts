@@ -28,3 +28,7 @@ export function open(path: string) {
     const full = "/Users/felixmoses/Documents/journal" + path
     return Bun.file(full)
 }
+
+export function get_path(req: Request, prefix: string = "") {
+    return new URL(req.url).pathname.slice(1 + prefix.length)
+}

@@ -1,9 +1,9 @@
-import { page } from "../utils/page.tsx"
+import { add_page, page } from "../utils/page.tsx"
 import * as time from "../utils/time.ts"
 import { range } from "../utils/math.ts"
 import { getAgendaItems } from "../utils/events.ts"
 
-export async function agenda_page(req: Request) {
+add_page("/agenda", async (req: Request) => {
     const date = new Date(
         new URL(req.url).searchParams.get("date") ??
         new Date().toISOString()
@@ -15,7 +15,7 @@ export async function agenda_page(req: Request) {
             <TimetrackerWidget week={date}  />
         </main>
     </>)
-}
+})
 
 export function WeekWidget({ week = new Date() }) {
     const start_h = 8

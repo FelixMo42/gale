@@ -1,5 +1,5 @@
 import { open, param, read } from "../utils/misc"
-import { page } from "../utils/page"
+import { add_page, page } from "../utils/page"
 import * as time from "../utils/time"
 import { CalendarWidget, ProjectsWidget } from "../widgets"
 
@@ -13,7 +13,7 @@ interface FeedItem {
     source: any
 }
 
-export async function feed_page(req: Request) {
+add_page("/feed", async (req: Request) => {
     const feed = (await get_feed()).slice(0, 50)
 
     return page("diary", <>
@@ -58,7 +58,7 @@ export async function feed_page(req: Request) {
             />
         </aside>
     </>)
-}
+})
 
 const parser = new Parser()
 

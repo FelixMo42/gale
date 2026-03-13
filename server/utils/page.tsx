@@ -1,7 +1,17 @@
-const pages = new Map<string, string>()
+export const PAGES: {
+    [key: string]: ((req: Request) => Promise<Response>)
+} = {}
 
-export function add_page(title: string, body: () => Promise<string> | string) {
-    
+export async function html(html: Promise<string> | string) {
+    return new Response(await html, {
+        headers: {
+            "Content-Type": "text/html",
+        }
+    })
+}
+
+export function add_page(title: string, body: (req: Request) => JSX.Element) {
+    PAGES[title] = req => html(body(req))
 }
 
 export async function page(title: string, body: string | Promise<string>) {

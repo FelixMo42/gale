@@ -1,4 +1,5 @@
 import { readdir } from "fs/promises"
+import { PAGES } from "./utils/page"
 
 export async function get_all_notes(): Promise<string[]> {
     const files = await readdir("/Users/felixmoses/Documents/journal", {
@@ -11,7 +12,10 @@ export async function get_all_notes(): Promise<string[]> {
         .map(file => file.replaceAll(".md", ""))
         .sort()
 
-    all.push("agenda")
+    for (const path of Object.keys(PAGES)) {
+        if (!path.includes("*"))
+            all.push(path.slice(1))
+    }
 
     return all
 }
