@@ -58,6 +58,9 @@ function get_type(name: string) {
         name.includes("42")
     ) return "42"
     if (
+        name.includes("aisc")
+    ) return "aisc"
+    if (
         name.includes("meeting") ||
         name.includes("el")
     ) return "Entrelacs"
@@ -67,9 +70,6 @@ function get_type(name: string) {
     if (
         name.includes("pc")
     ) return "pc"
-    if (
-        name.includes("aisc")
-    ) return "aisc"
     return "misc"
 }
 

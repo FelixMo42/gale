@@ -6,7 +6,8 @@ import { search_results } from "./search.tsx"
 import { param, template } from "./utils/misc.ts"
 import { readdir } from "fs/promises"
 import { page } from "./utils/page.tsx"
-import { agenda_page } from "./agenda_page.tsx"
+import { agenda_page } from "./pages/agenda_page.tsx"
+import { feed_page } from "./pages/feed_page.tsx"
 
 const FS_PATH = "/Users/felixmoses/Documents/journal/"
 
@@ -62,6 +63,7 @@ Bun.serve({
             }
         },
         "/agenda": req => html(agenda_page(req)),
+        "/feed": req => html(feed_page(req)),
         "/diary/*": req => html(diary_page(req)),
         "/api/search": (req) => html(search_results(param(req, "q")!))
     },
@@ -93,7 +95,7 @@ Bun.serve({
 
 async function refs() {
     const lines = await grep("gale")
-    return lines.map(line => <div class="bb pad dot">{line}</div>)
+    return lines.map(line => <div class="bb pad">{line}</div>)
 }
 
 async function grep(search: string) {

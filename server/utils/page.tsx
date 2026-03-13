@@ -1,3 +1,9 @@
+const pages = new Map<string, string>()
+
+export function add_page(title: string, body: () => Promise<string> | string) {
+    
+}
+
 export async function page(title: string, body: string | Promise<string>) {
     return "<!DOCTYPE html>" + <html>
         <head>

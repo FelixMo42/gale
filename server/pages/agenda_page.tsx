@@ -1,13 +1,18 @@
-import { page } from "./utils/page"
-import * as time from "./utils/time.ts"
-import { range } from "./utils/math.ts"
-import { getAgendaItems } from "./utils/events.ts"
+import { page } from "../utils/page.tsx"
+import * as time from "../utils/time.ts"
+import { range } from "../utils/math.ts"
+import { getAgendaItems } from "../utils/events.ts"
 
 export async function agenda_page(req: Request) {
+    const date = new Date(
+        new URL(req.url).searchParams.get("date") ??
+        new Date().toISOString()
+    )
+
     return page("agenda", <>
         <main class="full col pad gap">
-            <WeekWidget week={new Date()} />
-            <TimetrackerWidget week={new Date()}  />
+            <WeekWidget week={date} />
+            <TimetrackerWidget week={date}  />
         </main>
     </>)
 }

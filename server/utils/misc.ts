@@ -18,9 +18,13 @@ export function template(path: string) {
 }
 
 export async function read(path: string) {
-    const full = "/Users/felixmoses/Documents/journal" + path
-    const file = Bun.file(full)
+    const file = open(path)
     if (await file.exists())
         return file.text()
     return template(path)
+}
+
+export function open(path: string) {
+    const full = "/Users/felixmoses/Documents/journal" + path
+    return Bun.file(full)
 }

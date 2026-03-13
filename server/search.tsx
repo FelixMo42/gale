@@ -1,15 +1,19 @@
 import { readdir } from "fs/promises"
 
 export async function get_all_notes(): Promise<string[]> {
-    const all = await readdir("/Users/felixmoses/Documents/journal", {
+    const files = await readdir("/Users/felixmoses/Documents/journal", {
         recursive: true
     })
 
-    return all
+    const all = files
         .filter(file => !file.startsWith("."))
         .filter(file => file.endsWith(".md"))
         .map(file => file.replaceAll(".md", ""))
         .sort()
+
+    all.push("agenda")
+
+    return all
 }
 
 function fuzzy(query: string, target: string): boolean {
