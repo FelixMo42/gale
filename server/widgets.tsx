@@ -121,7 +121,7 @@ export function AgendaWidget({ date = new Date() }) {
             <div
                 class="editor agenda"
                 contenteditable="true"
-                href={`/fs/.hidden/agenda/${time.format_date_file(date)}.md`}
+                data-file={`/fs/.hidden/agenda/${time.format_date_file(date)}.md`}
                 data-date={time.format_date_file(date)}
             ></div>
         </div>

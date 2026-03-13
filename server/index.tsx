@@ -28,7 +28,7 @@ async function diary_page(req: Request) {
         <main>
             <div
                 class="editor"
-                href={`/fs/${get_path(req)}.md`}
+                data-file={`/fs/${get_path(req)}.md`}
                 contenteditable="true"
             ></div>
         </main>
@@ -79,7 +79,7 @@ Bun.serve({
             <main>
                 <div
                     class="editor"
-                    href={`/fs/${get_path(req)}.md`}
+                    data-file={`/fs/${get_path(req)}.md`}
                     contenteditable="true"
                 ></div>
             </main>

@@ -37,7 +37,7 @@ export function WeekWidget({ week = new Date() }) {
                 <div
                     class="editor agenda flex"
                     contenteditable="true"
-                    href={`/fs/.hidden/agenda/${time.format_date_file(date)}.md`}
+                    data-file={`/fs/.hidden/agenda/${time.format_date_file(date)}.md`}
                     data-date={time.format_date_file(date)}
                 ></div>
             )}

@@ -18,7 +18,7 @@ this.addEventListener("load", () => {
 })
 
 function attach_editor(editor) {
-    fetch(editor.getAttribute("href"), { cache: "no-cache" })
+    fetch(editor.getAttribute("data-file"), { cache: "no-cache" })
         .then(response => response.status == 200 ? response.text() : "")
         .then(text => editor.replaceChildren(...text
             .split("\n")

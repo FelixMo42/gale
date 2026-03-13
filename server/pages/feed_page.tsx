@@ -53,7 +53,7 @@ export async function feed_page(req: Request) {
         <aside>
             <article
                 class="editor"
-                href="/fs/settings/rss.md"
+                data-file="/fs/settings/rss.md"
                 contenteditable="true"
             />
         </aside>
